@@ -12,9 +12,9 @@ en: {
   nav_home: "Home", nav_animals: "Animals", nav_health: "Health", nav_production: "Production", nav_profile: "Profile",
   goodMorning: "Good morning", goodAfternoon: "Good afternoon", goodEvening: "Good evening", greet: "{g}, {name}",
   activeAnimals: "Active animals", overdueTasks: "Overdue tasks", dueIn14: "Due in 14 days",
-  milkToday: "Milk today", eggsToday: "Eggs today", eggsN: "{n} eggs",
+  milkToday: "Milk today",
   herd: "Herd", upcomingCare: "Upcoming care", seeAll: "See all", noUpcoming: "No upcoming vaccinations or follow-ups.",
-  quickAdd: "Quick add", addAnimalShort: "+ Animal", addHealthShort: "+ Health record", addMilkShort: "+ Milk", addEggsShort: "+ Eggs", addFeedShort: "+ Feed",
+  quickAdd: "Quick add", addAnimalShort: "+ Animal", addHealthShort: "+ Health record", addMilkShort: "+ Milk", addFeedShort: "+ Feed",
   recentActivity: "Recent activity", done: "Done",
   searchAnimals: "Search by tag, name or breed", all: "All", addAnimal: "Add animal",
   noMatch: "No animals match these filters.", noAnimals: "No animals yet. Add your first one.",
@@ -27,8 +27,8 @@ en: {
   nothingScheduled: "Nothing scheduled. Add a \"Next due\" date to a record to get reminders here.",
   allRecords: "All records", addRecord: "Add record",
   production: "Production", today: "Today", last7: "Last 7 days", cost30: "Cost, 30 days", vsPrior: "vs prior week",
-  log_Milk: "Milk log", log_Eggs: "Egg log", log_Feed: "Feed log", collection: "Collection", noEntries: "No entries yet.",
-  logBtn_Milk: "Log milk", logBtn_Eggs: "Log eggs", logBtn_Feed: "Log feed", editEntry: "Edit entry",
+  log_Milk: "Milk log", log_Feed: "Feed log", noEntries: "No entries yet.",
+  logBtn_Milk: "Log milk", logBtn_Feed: "Log feed", editEntry: "Edit entry",
   profile: "Profile", animalsLbl: "Animals", healthRecords: "Health records", prodEntries: "Production entries", memberSince: "Member since",
   data: "Data", exportBackup: "Export backup", exportSub: "Download all your records as a JSON file",
   importBackup: "Import backup", importSub: "Replace your records with a backup file",
@@ -47,11 +47,11 @@ en: {
   f_animal: "Animal", f_type: "Type", f_date: "Date", f_what: "What was done", ph_what: "e.g. FMD vaccine, hoof trimming",
   f_medicine: "Medicine / dose", f_cost: "Cost", f_nextDue: "Next due (booster / follow-up)",
   nextAfter: "Next due date must be after the record date", healthAdded: "Health record added", deleteQ: "Delete \"{x}\"?", deleted: "Deleted",
-  f_session: "Milking", f_milkL: "Milk (litres)", f_eggs: "Eggs collected", f_flock: "Flock / notes", ph_flock: "e.g. Layer flock A, 3 cracked",
+  f_session: "Milking", f_milkL: "Milk (litres)",
   f_fedTo: "Fed to", f_feedType: "Feed type", ph_feed: "e.g. Alfalfa hay, layer mash", f_qtyKg: "Quantity (kg)",
   qtyNeg: "Quantity cannot be negative", logged: "Logged", deleteEntry: "Delete this entry?",
   editProfile: "Edit profile", createAccountBtn: "Create account", f_yourName: "Your name", f_farm: "Farm name",
-  f_location: "Village / region", f_phone: "Phone", f_currency: "Currency symbol", ph_currency: "e.g. $, €, EGP",
+  f_location: "Village / region", f_phone: "Phone", f_currency: "Currency symbol", ph_currency: "e.g. DA, $, €",
   profileSaved: "Profile saved", welcome: "Welcome, {name}!", demoLoaded: "Demo farm loaded",
   deleteAccountQ: "Delete {name} and all of their records? This cannot be undone.", deleteAccountBtn: "Delete account", accountDeleted: "Account deleted",
   deleteAnimalQ: "Delete {name} and all of its health and milk records? Tip: to keep history, edit the animal and set its status to Sold or Deceased instead.",
@@ -64,10 +64,9 @@ en: {
   teethHow: "How to check: gently open the lips and count the large permanent teeth in the middle of the lower jaw. They come in pairs, from the centre outward.",
   teethNote: "Estimate only: it varies with breed, feeding and region.",
   teeth_milk: "Milk teeth only (small)", teeth_p: "{n} permanent teeth", teeth_full: "Full mouth: {n} permanent teeth",
-  teeth_fullCamel: "Full mouth + canines", teeth_worn: "Teeth worn down and spaced", teeth_broken: "Teeth broken or missing",
+  teeth_worn: "Teeth worn down and spaced", teeth_broken: "Teeth broken or missing",
   estAge: "Estimated age", years: "{n} years", moreThan: "more than {a}", lessThan: "less than {b}",
-  saveEstBirth: "Save as estimated birth date", estSaved: "Estimated birth date saved", estimated: "estimated",
-  teethUnsupported: "Age by teeth works for cattle, sheep, goats and camels."
+  saveEstBirth: "Save as estimated birth date", estSaved: "Estimated birth date saved", estimated: "estimated"
 },
 fr: {
   appTag: "Le carnet d'élevage de chaque éleveur : animaux, santé, alimentation et production dans votre poche.",
@@ -76,9 +75,9 @@ fr: {
   nav_home: "Accueil", nav_animals: "Animaux", nav_health: "Santé", nav_production: "Production", nav_profile: "Profil",
   goodMorning: "Bonjour", goodAfternoon: "Bon après-midi", goodEvening: "Bonsoir", greet: "{g}, {name}",
   activeAnimals: "Animaux actifs", overdueTasks: "Tâches en retard", dueIn14: "Prévu sous 14 jours",
-  milkToday: "Lait aujourd'hui", eggsToday: "Œufs aujourd'hui", eggsN: "{n} œufs",
+  milkToday: "Lait aujourd'hui",
   herd: "Troupeau", upcomingCare: "Soins à venir", seeAll: "Tout voir", noUpcoming: "Aucune vaccination ni suivi à venir.",
-  quickAdd: "Ajout rapide", addAnimalShort: "+ Animal", addHealthShort: "+ Soin", addMilkShort: "+ Lait", addEggsShort: "+ Œufs", addFeedShort: "+ Aliment",
+  quickAdd: "Ajout rapide", addAnimalShort: "+ Animal", addHealthShort: "+ Soin", addMilkShort: "+ Lait", addFeedShort: "+ Aliment",
   recentActivity: "Activité récente", done: "Fait",
   searchAnimals: "Rechercher par numéro, nom ou race", all: "Tous", addAnimal: "Ajouter un animal",
   noMatch: "Aucun animal ne correspond à ces filtres.", noAnimals: "Aucun animal pour l'instant. Ajoutez le premier.",
@@ -91,8 +90,8 @@ fr: {
   nothingScheduled: "Rien de planifié. Ajoutez une date de « prochain rappel » à un soin pour voir les rappels ici.",
   allRecords: "Tous les soins", addRecord: "Ajouter un soin",
   production: "Production", today: "Aujourd'hui", last7: "7 derniers jours", cost30: "Coût, 30 jours", vsPrior: "vs semaine préc.",
-  log_Milk: "Journal du lait", log_Eggs: "Journal des œufs", log_Feed: "Journal des aliments", collection: "Ramassage", noEntries: "Aucune saisie pour l'instant.",
-  logBtn_Milk: "Saisir le lait", logBtn_Eggs: "Saisir les œufs", logBtn_Feed: "Saisir l'aliment", editEntry: "Modifier la saisie",
+  log_Milk: "Journal du lait", log_Feed: "Journal des aliments", noEntries: "Aucune saisie pour l'instant.",
+  logBtn_Milk: "Saisir le lait", logBtn_Feed: "Saisir l'aliment", editEntry: "Modifier la saisie",
   profile: "Profil", animalsLbl: "Animaux", healthRecords: "Soins", prodEntries: "Saisies de production", memberSince: "Membre depuis",
   data: "Données", exportBackup: "Exporter une sauvegarde", exportSub: "Télécharger toutes vos données (fichier JSON)",
   importBackup: "Importer une sauvegarde", importSub: "Remplacer vos données par un fichier de sauvegarde",
@@ -111,11 +110,11 @@ fr: {
   f_animal: "Animal", f_type: "Type", f_date: "Date", f_what: "Intervention", ph_what: "ex. vaccin fièvre aphteuse, parage",
   f_medicine: "Médicament / dose", f_cost: "Coût", f_nextDue: "Prochain rappel / suivi",
   nextAfter: "Le prochain rappel doit être après la date du soin", healthAdded: "Soin ajouté", deleteQ: "Supprimer « {x} » ?", deleted: "Supprimé",
-  f_session: "Traite", f_milkL: "Lait (litres)", f_eggs: "Œufs ramassés", f_flock: "Lot / notes", ph_flock: "ex. Pondeuses A, 3 fêlés",
+  f_session: "Traite", f_milkL: "Lait (litres)",
   f_fedTo: "Donné à", f_feedType: "Type d'aliment", ph_feed: "ex. foin de luzerne, aliment pondeuse", f_qtyKg: "Quantité (kg)",
   qtyNeg: "La quantité ne peut pas être négative", logged: "Enregistré", deleteEntry: "Supprimer cette saisie ?",
   editProfile: "Modifier le profil", createAccountBtn: "Créer le compte", f_yourName: "Votre nom", f_farm: "Nom de la ferme",
-  f_location: "Village / région", f_phone: "Téléphone", f_currency: "Symbole monétaire", ph_currency: "ex. €, $, MAD",
+  f_location: "Village / région", f_phone: "Téléphone", f_currency: "Symbole monétaire", ph_currency: "ex. DA, €, $",
   profileSaved: "Profil enregistré", welcome: "Bienvenue, {name} !", demoLoaded: "Ferme démo chargée",
   deleteAccountQ: "Supprimer {name} et toutes ses données ? Cette action est irréversible.", deleteAccountBtn: "Supprimer le compte", accountDeleted: "Compte supprimé",
   deleteAnimalQ: "Supprimer {name} et tous ses soins et relevés de lait ? Astuce : pour garder l'historique, modifiez l'animal et passez son statut à Vendu ou Mort.",
@@ -128,10 +127,9 @@ fr: {
   teethHow: "Comment faire : écartez doucement les lèvres et comptez les grandes dents permanentes au milieu de la mâchoire du bas. Elles poussent par paires, du centre vers l'extérieur.",
   teethNote: "Estimation seulement : cela varie selon la race, l'alimentation et la région.",
   teeth_milk: "Seulement des dents de lait (petites)", teeth_p: "{n} dents permanentes", teeth_full: "Bouche pleine : {n} dents permanentes",
-  teeth_fullCamel: "Bouche pleine + crocs", teeth_worn: "Dents usées et écartées", teeth_broken: "Dents cassées ou manquantes",
+  teeth_worn: "Dents usées et écartées", teeth_broken: "Dents cassées ou manquantes",
   estAge: "Âge estimé", years: "{n} ans", moreThan: "plus de {a}", lessThan: "moins de {b}",
-  saveEstBirth: "Enregistrer comme date de naissance estimée", estSaved: "Date de naissance estimée enregistrée", estimated: "estimée",
-  teethUnsupported: "L'âge par les dents marche pour les bovins, moutons, chèvres et chameaux."
+  saveEstBirth: "Enregistrer comme date de naissance estimée", estSaved: "Date de naissance estimée enregistrée", estimated: "estimée"
 },
 ar: {
   appTag: "سجل الماشية لكل مزارع: الحيوانات والصحة والتغذية والإنتاج في جيبك.",
@@ -140,9 +138,9 @@ ar: {
   nav_home: "الرئيسية", nav_animals: "الحيوانات", nav_health: "الصحة", nav_production: "الإنتاج", nav_profile: "حسابي",
   goodMorning: "صباح الخير", goodAfternoon: "مساء الخير", goodEvening: "مساء الخير", greet: "{g} يا {name}",
   activeAnimals: "الحيوانات النشطة", overdueTasks: "مهام متأخرة", dueIn14: "مستحقة خلال 14 يومًا",
-  milkToday: "حليب اليوم", eggsToday: "بيض اليوم", eggsN: "{n} بيضة",
+  milkToday: "حليب اليوم",
   herd: "القطيع", upcomingCare: "الرعاية القادمة", seeAll: "عرض الكل", noUpcoming: "لا توجد تطعيمات أو متابعات قادمة.",
-  quickAdd: "إضافة سريعة", addAnimalShort: "+ حيوان", addHealthShort: "+ سجل صحي", addMilkShort: "+ حليب", addEggsShort: "+ بيض", addFeedShort: "+ علف",
+  quickAdd: "إضافة سريعة", addAnimalShort: "+ حيوان", addHealthShort: "+ سجل صحي", addMilkShort: "+ حليب", addFeedShort: "+ علف",
   recentActivity: "النشاط الأخير", done: "تم",
   searchAnimals: "ابحث بالرقم أو الاسم أو السلالة", all: "الكل", addAnimal: "إضافة حيوان",
   noMatch: "لا توجد حيوانات مطابقة لهذه التصفية.", noAnimals: "لا توجد حيوانات بعد. أضف أول حيوان.",
@@ -155,8 +153,8 @@ ar: {
   nothingScheduled: "لا شيء مجدول. أضف «موعد الجرعة التالية» إلى أي سجل لتظهر التذكيرات هنا.",
   allRecords: "كل السجلات", addRecord: "إضافة سجل",
   production: "الإنتاج", today: "اليوم", last7: "آخر 7 أيام", cost30: "التكلفة، 30 يومًا", vsPrior: "مقارنة بالأسبوع السابق",
-  log_Milk: "سجل الحليب", log_Eggs: "سجل البيض", log_Feed: "سجل العلف", collection: "جمع البيض", noEntries: "لا توجد تسجيلات بعد.",
-  logBtn_Milk: "تسجيل حليب", logBtn_Eggs: "تسجيل بيض", logBtn_Feed: "تسجيل علف", editEntry: "تعديل التسجيل",
+  log_Milk: "سجل الحليب", log_Feed: "سجل العلف", noEntries: "لا توجد تسجيلات بعد.",
+  logBtn_Milk: "تسجيل حليب", logBtn_Feed: "تسجيل علف", editEntry: "تعديل التسجيل",
   profile: "حسابي", animalsLbl: "الحيوانات", healthRecords: "السجلات الصحية", prodEntries: "تسجيلات الإنتاج", memberSince: "عضو منذ",
   data: "البيانات", exportBackup: "تصدير نسخة احتياطية", exportSub: "تنزيل كل سجلاتك كملف JSON",
   importBackup: "استيراد نسخة احتياطية", importSub: "استبدال سجلاتك بملف نسخة احتياطية",
@@ -175,11 +173,11 @@ ar: {
   f_animal: "الحيوان", f_type: "النوع", f_date: "التاريخ", f_what: "ما الذي تم", ph_what: "مثال: لقاح الحمى القلاعية، تقليم الحوافر",
   f_medicine: "الدواء / الجرعة", f_cost: "التكلفة", f_nextDue: "موعد الجرعة التالية / المتابعة",
   nextAfter: "يجب أن يكون الموعد التالي بعد تاريخ السجل", healthAdded: "تمت إضافة السجل الصحي", deleteQ: "حذف «{x}»؟", deleted: "تم الحذف",
-  f_session: "الحلبة", f_milkL: "الحليب (لتر)", f_eggs: "عدد البيض المجموع", f_flock: "القطيع / ملاحظات", ph_flock: "مثال: قطيع البياض أ، 3 مكسورة",
+  f_session: "الحلبة", f_milkL: "الحليب (لتر)",
   f_fedTo: "قُدِّم إلى", f_feedType: "نوع العلف", ph_feed: "مثال: دريس برسيم، علف بياض", f_qtyKg: "الكمية (كغ)",
   qtyNeg: "لا يمكن أن تكون الكمية سالبة", logged: "تم التسجيل", deleteEntry: "حذف هذا التسجيل؟",
   editProfile: "تعديل الحساب", createAccountBtn: "إنشاء الحساب", f_yourName: "اسمك", f_farm: "اسم المزرعة",
-  f_location: "القرية / المنطقة", f_phone: "الهاتف", f_currency: "رمز العملة", ph_currency: "مثال: ج.م، ر.س، د.م.",
+  f_location: "القرية / المنطقة", f_phone: "الهاتف", f_currency: "رمز العملة", ph_currency: "مثال: دج، د.م.، ج.م",
   profileSaved: "تم حفظ الحساب", welcome: "أهلًا بك يا {name}!", demoLoaded: "تم تحميل المزرعة التجريبية",
   deleteAccountQ: "حذف {name} وكل سجلاته؟ لا يمكن التراجع عن ذلك.", deleteAccountBtn: "حذف الحساب", accountDeleted: "تم حذف الحساب",
   deleteAnimalQ: "حذف {name} وكل سجلاته الصحية وسجلات الحليب؟ نصيحة: للاحتفاظ بالسجل، عدّل الحيوان واجعل حالته «مُباع» أو «نافق» بدلًا من الحذف.",
@@ -192,10 +190,9 @@ ar: {
   teethHow: "طريقة الفحص: افتح الشفتين بلطف وعُدّ الأسنان الدائمة الكبيرة في وسط الفك السفلي. تظهر أزواجًا من الوسط إلى الخارج.",
   teethNote: "تقدير فقط: يختلف حسب السلالة والتغذية والمنطقة.",
   teeth_milk: "أسنان لبنية فقط (صغيرة)", teeth_p: "{n} أسنان دائمة", teeth_full: "فم كامل: {n} أسنان دائمة",
-  teeth_fullCamel: "فم كامل + أنياب", teeth_worn: "أسنان متآكلة ومتباعدة", teeth_broken: "أسنان مكسورة أو مفقودة",
+  teeth_worn: "أسنان متآكلة ومتباعدة", teeth_broken: "أسنان مكسورة أو مفقودة",
   estAge: "العمر التقديري", years: "{n} سنة", moreThan: "أكثر من {a}", lessThan: "أقل من {b}",
-  saveEstBirth: "حفظ كتاريخ ميلاد تقديري", estSaved: "تم حفظ تاريخ الميلاد التقديري", estimated: "تقديري",
-  teethUnsupported: "تقدير العمر بالأسنان متاح للأبقار والأغنام والماعز والإبل."
+  saveEstBirth: "حفظ كتاريخ ميلاد تقديري", estSaved: "تم حفظ تاريخ الميلاد التقديري", estimated: "تقديري"
 }
 };
 
@@ -203,46 +200,50 @@ ar: {
 const ENUM = {
 en: {},
 fr: {
-  Cattle: "Bovins", Goat: "Chèvres", Sheep: "Moutons", Poultry: "Volailles", Pig: "Porcs", Camel: "Chameaux", Horse: "Chevaux", Rabbit: "Lapins", Other: "Autre",
+  Sheep: "Moutons", Goat: "Chèvres", Cattle: "Bovins", Other: "Autre",
   Active: "Actif", Sold: "Vendu", Deceased: "Mort", Female: "Femelle", Male: "Mâle", All: "Tous",
   Vaccination: "Vaccination", Treatment: "Traitement", Deworming: "Vermifuge", "Check-up": "Contrôle", Injury: "Blessure", "Pregnancy check": "Diagnostic de gestation",
   Morning: "Matin", Evening: "Soir", "Full day": "Journée entière", "All animals": "Tous les animaux",
-  Milk: "Lait", Eggs: "Œufs", Feed: "Aliments"
+  Milk: "Lait", Feed: "Aliments"
 },
 ar: {
-  Cattle: "أبقار", Goat: "ماعز", Sheep: "أغنام", Poultry: "دواجن", Pig: "خنازير", Camel: "إبل", Horse: "خيول", Rabbit: "أرانب", Other: "أخرى",
+  Sheep: "أغنام", Goat: "ماعز", Cattle: "أبقار", Other: "أخرى",
   Active: "نشط", Sold: "مُباع", Deceased: "نافق", Female: "أنثى", Male: "ذكر", All: "الكل",
   Vaccination: "تطعيم", Treatment: "علاج", Deworming: "مكافحة الديدان", "Check-up": "فحص", Injury: "إصابة", "Pregnancy check": "فحص الحمل",
   Morning: "صباحًا", Evening: "مساءً", "Full day": "اليوم كاملًا", "All animals": "كل الحيوانات",
-  Milk: "الحليب", Eggs: "البيض", Feed: "العلف"
+  Milk: "الحليب", Feed: "العلف"
 }
 };
 
-// Demo farm content in each language.
+// Demo farm content in each language (an Algerian sheep, goat and cattle farm).
+// names: Daisy, Bella, Max, Luna, Rocky (cattle), Nala, Billy (goats), Woolly, Dolly, ram (sheep).
+// costScale converts the demo's dollar prices to the local currency.
 const DEMO = {
 en: {
-  farmer: "Demo Farmer", farm: "Green Valley Farm", location: "Nile Delta", currency: "$",
-  names: ["Daisy", "Bella", "Max", "Luna", "Rocky", "Nala", "Billy", "Woolly", "Dolly", "Layer flock A (40 hens)"],
-  care: ["FMD vaccine", "Brucellosis booster", "Ivermectin pour-on", "Mastitis, left udder", "Newcastle disease", "Growth check", "Confirmed pregnant", "Cut on right foreleg"],
+  farmer: "Demo Farmer", farm: "Green Valley Farm", location: "Djelfa, Algeria", currency: "DA ", costScale: 150,
+  names: ["Daisy", "Bella", "Max", "Luna", "Rocky", "Nala", "Billy", "Woolly", "Dolly", "Samson"],
+  care: ["FMD vaccine", "Brucellosis booster", "Ivermectin pour-on", "Mastitis, left udder", "Enterotoxemia vaccine", "Growth check", "Confirmed pregnant", "Cut on right foreleg"],
   meds: ["Aftovax 2 ml", "Ivermectin 1%", "Oxytetracycline", "Antiseptic spray"],
   notes: {daisy: "Top milker. Calm temperament.", rocky: "Sold at weekly market.", nala: "Milk withheld 5 days.", luna: "Healthy, gaining well.", woolly: "Expected lambing in ~2 months."},
-  feeds: ["Alfalfa hay", "Layer mash", "Goat pellets"], flock: "Layer flock A"
+  feeds: ["Alfalfa hay", "Barley", "Goat pellets"],
+  breeds: {Montbeliarde: "Montbéliarde", "Atlas Brown": "Brown Atlas"}
 },
 fr: {
-  farmer: "Éleveur démo", farm: "Ferme de la Vallée Verte", location: "Vallée du Nil", currency: "€",
-  names: ["Marguerite", "Belle", "Max", "Luna", "Rocky", "Nala", "Billy", "Laineuse", "Dolly", "Lot de pondeuses A (40 poules)"],
-  care: ["Vaccin fièvre aphteuse", "Rappel brucellose", "Ivermectine pour-on", "Mammite, quartier gauche", "Maladie de Newcastle", "Contrôle de croissance", "Gestation confirmée", "Coupure patte avant droite"],
+  farmer: "Éleveur démo", farm: "Ferme de la Vallée Verte", location: "Djelfa", currency: "DA ", costScale: 150,
+  names: ["Marguerite", "Belle", "Max", "Luna", "Rocky", "Nala", "Billy", "Laineuse", "Dolly", "Samson"],
+  care: ["Vaccin fièvre aphteuse", "Rappel brucellose", "Ivermectine pour-on", "Mammite, quartier gauche", "Vaccin entérotoxémie", "Contrôle de croissance", "Gestation confirmée", "Coupure patte avant droite"],
   meds: ["Aftovax 2 ml", "Ivermectine 1 %", "Oxytétracycline", "Spray antiseptique"],
   notes: {daisy: "Meilleure laitière. Tempérament calme.", rocky: "Vendu au marché hebdomadaire.", nala: "Lait retenu 5 jours.", luna: "En bonne santé, bonne croissance.", woolly: "Agnelage prévu dans ~2 mois."},
-  feeds: ["Foin de luzerne", "Aliment pondeuse", "Granulés chèvre"], flock: "Lot de pondeuses A"
+  feeds: ["Foin de luzerne", "Orge", "Granulés chèvre"],
+  breeds: {Montbeliarde: "Montbéliarde", "Atlas Brown": "Brune de l'Atlas"}
 },
 ar: {
-  farmer: "مزارع تجريبي", farm: "مزرعة الوادي الأخضر", location: "دلتا النيل", currency: "ج.م ",
-  names: ["زهرة", "نجمة", "عنتر", "قمر", "سلطان", "غزالة", "شهاب", "صوفة", "بيضاء", "قطيع البياض أ (40 دجاجة)"],
-  care: ["لقاح الحمى القلاعية", "جرعة منشطة للبروسيلا", "إيفرمكتين صب على الظهر", "التهاب الضرع، الربع الأيسر", "مرض نيوكاسل", "فحص النمو", "حمل مؤكد", "جرح في الساق الأمامية اليمنى"],
+  farmer: "مزارع تجريبي", farm: "مزرعة الوادي الأخضر", location: "الجلفة", currency: "دج ", costScale: 150,
+  names: ["زهرة", "نجمة", "عنتر", "قمر", "سلطان", "غزالة", "شهاب", "صوفة", "بيضاء", "صقر"],
+  care: ["لقاح الحمى القلاعية", "جرعة منشطة للبروسيلا", "إيفرمكتين صب على الظهر", "التهاب الضرع، الربع الأيسر", "لقاح التسمم المعوي", "فحص النمو", "حمل مؤكد", "جرح في الساق الأمامية اليمنى"],
   meds: ["أفتوفاكس 2 مل", "إيفرمكتين 1%", "أوكسي تتراسيكلين", "بخاخ مطهر"],
   notes: {daisy: "أعلى إنتاج للحليب. هادئة الطباع.", rocky: "بيع في السوق الأسبوعي.", nala: "حجب الحليب 5 أيام.", luna: "بصحة جيدة وتكتسب الوزن جيدًا.", woolly: "الولادة المتوقعة بعد شهرين تقريبًا."},
-  feeds: ["دريس برسيم", "علف بياض", "علف ماعز مكعبات"], flock: "قطيع البياض أ",
-  breeds: {Holstein: "هولشتاين", Jersey: "جيرسي", Angus: "أنجوس", Saanen: "سانين", Boer: "بوير", Merino: "ميرينو", Awassi: "عواسي", "ISA Brown": "إيزا براون"}
+  feeds: ["دريس برسيم", "شعير", "علف ماعز مكعبات"],
+  breeds: {Holstein: "هولشتاين", Montbeliarde: "مونبليارد", "Atlas Brown": "البنية الأطلسية", Arbia: "العربية", Makatia: "المكاتية", "Ouled Djellal": "أولاد جلال", Rembi: "الرمبي"}
 }
 };

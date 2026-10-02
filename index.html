@@ -164,8 +164,8 @@ svg.i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-l
 'use strict';
 /* ---------- constants ---------- */
 const KEY = 'herdbook.v1';
-const SPECIES = {Cattle:'🐄',Goat:'🐐',Sheep:'🐑',Poultry:'🐔',Pig:'🐖',Camel:'🐪',Horse:'🐎',Rabbit:'🐇',Other:'🐾'};
-const MILK_SPECIES = ['Cattle','Goat','Sheep','Camel'];
+const SPECIES = {Sheep:'🐑',Goat:'🐐',Cattle:'🐄'};
+const MILK_SPECIES = ['Cattle','Goat','Sheep'];
 const HEALTH_TYPES = ['Vaccination','Treatment','Deworming','Check-up','Injury','Pregnancy check','Other'];
 const STATUSES = ['Active','Sold','Deceased'];
 const LOGO = '<svg viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#2f6b3a"/><path d="M256 404V252" stroke="#f4f1ea" stroke-width="28" stroke-linecap="round"/><path d="M256 262c0-72 52-124 134-124 0 82-52 134-134 124z" fill="#f4f1ea"/><path d="M256 304c0-62-44-104-114-104 0 68 44 112 114 104z" fill="#cfe5c9"/></svg>';
@@ -249,7 +249,12 @@ const D = () => db.data[db.currentId] || (db.data[db.currentId] = {animals: [], 
 const animal = id => D().animals.find(a => a.id === id);
 const aName = a => a ? (a.name || a.tag) : t('herdShort');
 const aEmoji = a => a ? (SPECIES[a.species] || '🐾') : '🏡';
-const money = n => (me()?.currency || '') + fmt(n, 2);
+// "$12" for single symbols, "12 DA" / "12 €" / "12 دج" otherwise.
+function money(n) {
+  const c = (me()?.currency || '').trim();
+  if (!c) return fmt(n, 2);
+  return /^[$£¥]$/.test(c) ? c + fmt(n, 2) : fmt(n, 2) + ' ' + c;
+}
 const costLabel = () => t('f_cost') + (me().currency ? ` (${me().currency.trim()})` : '');
 function dueList() {
   return D().health
@@ -311,7 +316,6 @@ function viewHome() {
   const overdue = due.filter(h => h.nextDue < td).length;
   const soon = due.filter(h => h.nextDue >= td && daysBetween(td, h.nextDue) <= 14).length;
   const milk = sum(d.production.filter(p => p.kind === 'Milk' && p.date === td), 'qty');
-  const eggs = sum(d.production.filter(p => p.kind === 'Eggs' && p.date === td), 'qty');
   const counts = {};
   active.forEach(a => counts[a.species] = (counts[a.species] || 0) + 1);
   const hour = new Date().getHours();
@@ -323,15 +327,12 @@ function viewHome() {
     ...d.feed.slice().sort(byDate).slice(0, 2).map(f => ({date: f.date, html: `🌾 <b>${tv('Feed')}</b>: ${esc(f.feedType)}`, sub: `${fmt(f.qty)} ${t('u_kg')} · ${tv(f.group)}`})),
   ].sort(byDate);
 
-  const prodVal = milk ? `${fmt(milk)} ${t('u_L')}` : fmt(eggs, 0);
-  const prodLbl = milk || !eggs ? t('milkToday') + (milk && eggs ? ' · ' + t('eggsN', {n: fmt(eggs, 0)}) : '') : t('eggsToday');
-
   return `${header(t('greet', {g: greet, name: me().name.split(' ')[0]}))}
     <div class="stats">
       <button class="stat" data-go="animals"><div class="v">${fmt(active.length, 0)}</div><div class="l">${t('activeAnimals')}</div></button>
       <button class="stat ${overdue ? 'alert' : ''}" data-go="health"><div class="v">${fmt(overdue, 0)}</div><div class="l">${t('overdueTasks')}</div></button>
       <button class="stat ${soon ? 'warn' : ''}" data-go="health"><div class="v">${fmt(soon, 0)}</div><div class="l">${t('dueIn14')}</div></button>
-      <button class="stat" data-act="openProd" data-k="${eggs && !milk ? 'Eggs' : 'Milk'}"><div class="v">${prodVal}</div><div class="l">${prodLbl}</div></button>
+      <button class="stat" data-act="openProd" data-k="Milk"><div class="v">${fmt(milk)} ${t('u_L')}</div><div class="l">${t('milkToday')}</div></button>
     </div>
     ${Object.keys(counts).length ? `<h2 class="section">${t('herd')}</h2><div class="chips">${Object.entries(counts).map(([s, n]) =>
       `<button class="chip" data-act="filterSpecies" data-v="${s}" data-nav="1">${SPECIES[s] || '🐾'} ${esc(tv(s))} · ${fmt(n, 0)}</button>`).join('')}</div>` : ''}
@@ -343,7 +344,6 @@ function viewHome() {
       <button class="btn small" data-act="addAnimal">${t('addAnimalShort')}</button>
       <button class="btn small" data-act="addHealth">${t('addHealthShort')}</button>
       <button class="btn small" data-act="addProd" data-k="Milk">${t('addMilkShort')}</button>
-      <button class="btn small" data-act="addProd" data-k="Eggs">${t('addEggsShort')}</button>
       <button class="btn small" data-act="addProd" data-k="Feed">${t('addFeedShort')}</button>
       <button class="btn small" data-act="teeth">🦷 ${t('teethTool')}</button>
     </div>
@@ -469,7 +469,7 @@ function viewHealth() {
 function viewProduction() {
   const k = state.prod, d = D(), td = today();
   const entries = (k === 'Feed' ? d.feed : d.production.filter(p => p.kind === k)).slice().sort((a, b) => b.date.localeCompare(a.date));
-  const unit = k === 'Milk' ? t('u_L') : k === 'Eggs' ? '' : t('u_kg');
+  const unit = k === 'Milk' ? t('u_L') : t('u_kg');
   const days = [];
   for (let i = 13; i >= 0; i--) { const ds = addDays(td, -i); days.push({x: ds, y: entries.filter(e => e.date === ds).reduce((s, e) => s + (Number(e.qty) || 0), 0)}); }
   const last7 = days.slice(7).reduce((s, x) => s + x.y, 0);
@@ -478,8 +478,8 @@ function viewProduction() {
   const u = unit ? ' ' + unit : '';
   const feedCost = k === 'Feed' ? sum(entries.filter(e => daysBetween(e.date, td) < 30), 'cost') : 0;
   return `${header(t('production'))}
-    <div class="seg" style="margin-bottom:14px">${['Milk', 'Eggs', 'Feed'].map(x =>
-      `<button class="${k === x ? 'on' : ''}" data-act="prodTab" data-v="${x}">${x === 'Milk' ? '🥛' : x === 'Eggs' ? '🥚' : '🌾'} ${tv(x)}</button>`).join('')}</div>
+    <div class="seg" style="margin-bottom:14px">${['Milk', 'Feed'].map(x =>
+      `<button class="${k === x ? 'on' : ''}" data-act="prodTab" data-v="${x}">${x === 'Milk' ? '🥛' : '🌾'} ${tv(x)}</button>`).join('')}</div>
     <div class="card">
       <div class="mini">
         <div><b>${fmt(days[13].y)}${u}</b><small>${t('today')}</small></div>
@@ -492,7 +492,7 @@ function viewProduction() {
     <h2 class="section">${t('log_' + k)}</h2>
     ${entries.length ? `<div class="list">${entries.slice(0, 50).map(e => k === 'Feed'
       ? `<button class="row" data-act="editProd" data-k="Feed" data-id="${e.id}"><span class="sp">🌾</span><span class="grow"><b>${esc(e.feedType)}</b><small>${esc(tv(e.group))}${e.cost ? ' · ' + money(e.cost) : ''}${e.notes ? ' · ' + esc(e.notes) : ''}</small></span><span class="end"><b>${fmt(e.qty)}${u}</b><small class="muted">${fdate(e.date)}</small></span></button>`
-      : `<button class="row" data-act="editProd" data-k="${k}" data-id="${e.id}"><span class="sp">${k === 'Eggs' ? '🥚' : aEmoji(animal(e.animalId))}</span><span class="grow"><b>${k === 'Eggs' ? esc(e.notes || t('collection')) : esc(aName(animal(e.animalId)))}</b><small>${fdate(e.date)}${e.session ? ' · ' + esc(tv(e.session)) : ''}</small></span><span class="end"><b>${fmt(e.qty)}${u}</b></span></button>`
+      : `<button class="row" data-act="editProd" data-k="${k}" data-id="${e.id}"><span class="sp">${aEmoji(animal(e.animalId))}</span><span class="grow"><b>${esc(aName(animal(e.animalId)))}</b><small>${fdate(e.date)}${e.session ? ' · ' + esc(tv(e.session)) : ''}</small></span><span class="end"><b>${fmt(e.qty)}${u}</b></span></button>`
     ).join('')}</div>` : `<div class="list"><div class="empty">${t('noEntries')}</div></div>`}
     <button class="fab" data-act="addProd" data-k="${k}">${icon('plus')} ${t('logBtn_' + k)}</button>`;
 }
@@ -622,7 +622,8 @@ function animalForm(a) {
   const fields = [
     {name: 'tag', label: t('f_tag'), required: true, half: true, placeholder: t('ph_tag')},
     {name: 'name', label: t('f_name'), half: true, placeholder: t('optional')},
-    {name: 'species', label: t('f_species'), type: 'select', options: opts(Object.keys(SPECIES)), half: true},
+    // Keep a species that's no longer offered (older records) so editing doesn't silently change it.
+    {name: 'species', label: t('f_species'), type: 'select', options: opts([...Object.keys(SPECIES), ...(a && !SPECIES[a.species] ? [a.species] : [])]), half: true},
     {name: 'breed', label: t('f_breed'), half: true},
     {name: 'sex', label: t('f_sex'), type: 'select', options: opts(['Female', 'Male']), half: true},
     {name: 'birth', label: t('f_birth'), type: 'date', half: true},
@@ -631,7 +632,7 @@ function animalForm(a) {
     {name: 'notes', label: t('f_notes'), type: 'textarea', placeholder: t('ph_animalNotes')}
   ];
   openForm({
-    title: isNew ? t('addAnimal') : t('editAnimal'), fields, values: a || {species: state.species !== 'All' ? state.species : 'Cattle', sex: 'Female'},
+    title: isNew ? t('addAnimal') : t('editAnimal'), fields, values: a || {species: state.species !== 'All' ? state.species : 'Sheep', sex: 'Female'},
     submit: isNew ? t('addAnimal') : t('save'),
     onSubmit: v => {
       if (D().animals.some(x => x.tag.toLowerCase() === v.tag.toLowerCase() && x.id !== a?.id)) { toast(t('tagUsed', {tag: v.tag})); return false; }
@@ -685,10 +686,6 @@ function prodForm(kind, e, preset = {}) {
       {name: 'date', label: t('f_date'), type: 'date', required: true, half: true},
       {name: 'session', label: t('f_session'), type: 'select', options: opts(['Morning', 'Evening', 'Full day']), half: true},
       {name: 'qty', label: t('f_milkL'), type: 'number', required: true}]
-    : kind === 'Eggs' ? [
-      {name: 'date', label: t('f_date'), type: 'date', required: true, half: true},
-      {name: 'qty', label: t('f_eggs'), type: 'number', required: true, half: true},
-      {name: 'notes', label: t('f_flock'), placeholder: t('ph_flock')}]
     : [
       {name: 'date', label: t('f_date'), type: 'date', required: true, half: true},
       {name: 'group', label: t('f_fedTo'), type: 'select', options: opts(['All animals', ...Object.keys(SPECIES)]), half: true},
@@ -725,7 +722,6 @@ function profileForm(f) {
       {name: 'currency', label: t('f_currency'), half: true, placeholder: t('ph_currency')}
     ],
     onSubmit: v => {
-      if (v.currency && !/\s$/.test(v.currency) && /[^\s$€£¥]$/.test(v.currency)) v.currency += ' ';
       if (f) { Object.assign(f, v); toast(t('profileSaved')); return; }
       const n = {id: uid(), ...v, createdAt: today()};
       db.farmers.push(n); db.currentId = n.id; D(); state.view = 'home'; toast(t('welcome', {name: v.name.split(' ')[0]}));
@@ -738,17 +734,15 @@ function profileForm(f) {
 // Typical ranges only; breed, feeding and region shift them.
 const SHEEP_TEETH = {n: 8, stages: [['milk', 0, 0, 0, 1], ['p2', 2, 0, 1, 1.5], ['p4', 4, 0, 1.5, 2.5], ['p6', 6, 0, 2.5, 3], ['full', 8, 0, 3, 4], ['worn', 8, 1, 4, 6], ['broken', 8, 2, 6, null]]};
 const TEETH = {
-  Cattle: {n: 8, stages: [['milk', 0, 0, 0, 2], ['p2', 2, 0, 1.5, 2.5], ['p4', 4, 0, 2.5, 3], ['p6', 6, 0, 3, 3.5], ['full', 8, 0, 3.5, 5], ['worn', 8, 1, 5, 9], ['broken', 8, 2, 9, null]]},
   Sheep: SHEEP_TEETH,
   Goat: SHEEP_TEETH,
-  // Camels have 6 lower incisors; the canines come in after them.
-  Camel: {n: 6, stages: [['milk', 0, 0, 0, 4.5], ['p2', 2, 0, 4.5, 5.5], ['p4', 4, 0, 5.5, 6.5], ['p6', 6, 0, 6.5, 7], ['full', 6, 0, 7, 10], ['worn', 6, 1, 10, 15], ['broken', 6, 2, 15, null]]}
+  Cattle: {n: 8, stages: [['milk', 0, 0, 0, 2], ['p2', 2, 0, 1.5, 2.5], ['p4', 4, 0, 2.5, 3], ['p6', 6, 0, 3, 3.5], ['full', 8, 0, 3.5, 5], ['worn', 8, 1, 5, 9], ['broken', 8, 2, 9, null]]}
 };
 let teethCtx = null;
 
-function toothSvg(n, perm, wear, canines) {
-  const step = 18, pad = canines ? 18 : 6, W = n * step + pad * 2, gumY = 44;
-  const missing = wear === 2 ? (n === 8 ? [1, 6] : [1, 4]) : [];
+function toothSvg(n, perm, wear) {
+  const step = 18, pad = 6, W = n * step + pad * 2, gumY = 44;
+  const missing = wear === 2 ? [1, 6] : [];
   let teeth = '';
   for (let i = 0; i < n; i++) {
     const dist = Math.abs(i - (n - 1) / 2), x = pad + i * step;
@@ -760,7 +754,6 @@ function toothSvg(n, perm, wear, canines) {
       teeth += `<rect class="milk" x="${x + 4}" y="${gumY - 14}" width="10" height="18" rx="4"/>`;
     }
   }
-  if (canines) [6, W - 14].forEach(x => teeth += `<path class="perm" d="M${x} ${gumY + 2} L${x + 4} ${gumY - 22} L${x + 8} ${gumY + 2}Z"/>`);
   return `<svg class="tooth-svg" viewBox="0 0 ${W} 60" aria-hidden="true">${teeth}<rect class="gum" x="0" y="${gumY}" width="${W}" height="16" rx="8"/></svg>`;
 }
 function fmtYears(y) { return y < 1 ? t('age_mo', {n: Math.round(y * 12)}) : t('years', {n: fmt(y, 1)}); }
@@ -769,17 +762,17 @@ function teethRange(min, max) {
   if (min === 0) return t('lessThan', {b: fmtYears(max)});
   return `${fmtYears(min)} – ${fmtYears(max)}`;
 }
-function teethLabel(sp, key, perm) {
+function teethLabel(key, perm) {
   if (key === 'milk') return t('teeth_milk');
   if (key === 'worn') return t('teeth_worn');
   if (key === 'broken') return t('teeth_broken');
-  if (key === 'full') return sp === 'Camel' ? t('teeth_fullCamel') : t('teeth_full', {n: perm});
+  if (key === 'full') return t('teeth_full', {n: perm});
   return t('teeth_p', {n: perm});
 }
 
 function openTeeth(animalId) {
   const a = animalId && animal(animalId);
-  const species = a && TEETH[a.species] ? a.species : 'Cattle';
+  const species = a && TEETH[a.species] ? a.species : 'Sheep';
   teethCtx = {animalId: a ? a.id : null, species, stage: null};
   openSheet(`<div class="sheet"><div class="grab"></div>
     <div class="sheet-head"><h2>🦷 ${t('teethTool')}${a ? ' · ' + esc(aName(a)) : ''}</h2><button type="button" class="icon-btn" data-act="closeSheet" aria-label="${t('close')}">✕</button></div>
@@ -796,8 +789,8 @@ function renderTeeth() {
       <select id="teethSpecies">${Object.keys(TEETH).map(s => `<option value="${s}"${s === species ? ' selected' : ''}>${SPECIES[s]} ${esc(tv(s))}</option>`).join('')}</select></div>
     <div class="tooth-list">${cfg.stages.map(([key, perm, wear, min, max]) =>
       `<button class="tooth-opt ${stage === key ? 'on' : ''}" data-act="teethPick" data-v="${key}">
-        ${toothSvg(cfg.n, perm, wear, species === 'Camel' && ['full', 'worn', 'broken'].includes(key))}
-        <span class="grow"><b>${teethLabel(species, key, perm)}</b><small>≈ ${teethRange(min, max)}</small></span></button>`).join('')}</div>
+        ${toothSvg(cfg.n, perm, wear)}
+        <span class="grow"><b>${teethLabel(key, perm)}</b><small>≈ ${teethRange(min, max)}</small></span></button>`).join('')}</div>
     ${picked ? `<div class="result" id="teethResult"><div class="muted">${t('estAge')}</div><div class="v">≈ ${teethRange(picked[3], picked[4])}</div>
       <small>${t('teethNote')}</small>
       ${animalId ? `<button class="btn primary block" style="margin-top:12px" data-act="teethSave">${t('saveEstBirth')}</button>` : ''}</div>`
@@ -808,6 +801,7 @@ function renderTeeth() {
 /* ---------- demo data ---------- */
 function seedDemo() {
   const L = DEMO[lang] || DEMO.en, N = L.names, C = L.care, M = L.meds;
+  const amt = n => n * (L.costScale || 1); // demo prices are written in dollars; scale to the local currency
   const td = today(), id = uid();
   db.farmers.push({id, name: L.farmer, farm: L.farm, location: L.location, phone: '', currency: L.currency, createdAt: addDays(td, -200)});
   db.currentId = id;
@@ -817,40 +811,39 @@ function seedDemo() {
       weights: kgs.map(([ago, kg]) => ({date: addDays(td, -ago), kg})), ...extra};
     d.animals.push(a); return a;
   };
+  const woolly = A('S-001', N[7], 'Sheep', 'Ouled Djellal', 'Female', '2022-04-01', [[60, 66]]);
+  A('S-002', N[8], 'Sheep', 'Rembi', 'Female', '2023-03-22', [[60, 58]]);
+  const ram = A('S-003', N[9], 'Sheep', 'Ouled Djellal', 'Male', addDays(td, -560), [[90, 62], [20, 71]]);
+  const nala = A('G-001', N[5], 'Goat', 'Arbia', 'Female', '2023-01-05', [[45, 61]]);
+  const billy = A('G-002', N[6], 'Goat', 'Makatia', 'Male', '2022-08-19', [[45, 88]]);
   const daisy = A('C-001', N[0], 'Cattle', 'Holstein', 'Female', '2021-03-12', [[180, 540], [90, 565], [20, 578]], {notes: L.notes.daisy});
-  const bella = A('C-002', N[1], 'Cattle', 'Jersey', 'Female', '2022-06-02', [[120, 395], [30, 410]]);
-  const max = A('C-003', N[2], 'Cattle', 'Angus', 'Male', '2020-11-20', [[60, 812]]);
+  const bella = A('C-002', N[1], 'Cattle', 'Montbeliarde', 'Female', '2022-06-02', [[120, 395], [30, 410]]);
+  const max = A('C-003', N[2], 'Cattle', 'Atlas Brown', 'Male', '2020-11-20', [[60, 612]]);
   const luna = A('C-004', N[3], 'Cattle', 'Holstein', 'Female', addDays(td, -230), [[200, 42], [140, 98], [80, 151], [20, 196]], {motherTag: 'C-001'});
-  A('C-005', N[4], 'Cattle', 'Angus', 'Male', '2021-09-01', [[150, 640]], {status: 'Sold', statusDate: addDays(td, -40), notes: L.notes.rocky});
-  const nala = A('G-001', N[5], 'Goat', 'Saanen', 'Female', '2023-01-05', [[45, 61]]);
-  const billy = A('G-002', N[6], 'Goat', 'Boer', 'Male', '2022-08-19', [[45, 88]]);
-  const woolly = A('S-001', N[7], 'Sheep', 'Merino', 'Female', '2022-04-01', [[60, 66]]);
-  A('S-002', N[8], 'Sheep', 'Awassi', 'Female', '2023-03-22', [[60, 58]]);
-  const flock = A('P-A', N[9], 'Poultry', 'ISA Brown', 'Female', addDays(td, -150), []);
+  A('C-005', N[4], 'Cattle', 'Atlas Brown', 'Male', '2021-09-01', [[150, 540]], {status: 'Sold', statusDate: addDays(td, -40), notes: L.notes.rocky});
 
   const H = (a, type, ago, title, next, extra = {}) => d.health.push({id: uid(), animalId: a.id, type, date: addDays(td, -ago), title,
     medicine: '', cost: null, nextDue: next === null ? '' : addDays(td, next), notes: '', ...extra});
-  H(daisy, 'Vaccination', 350, C[0], -170, {followDone: true, cost: 6});
-  H(daisy, 'Vaccination', 170, C[0], -5, {cost: 6, medicine: M[0]});
-  H(bella, 'Vaccination', 350, C[1], 3, {cost: 8});
-  H(max, 'Deworming', 80, C[2], 10, {medicine: M[1], cost: 12});
-  H(nala, 'Treatment', 6, C[3], 1, {medicine: M[2], cost: 18, notes: L.notes.nala});
-  H(flock, 'Vaccination', 60, C[4], 30, {cost: 15});
+  H(daisy, 'Vaccination', 350, C[0], -170, {followDone: true, cost: amt(6)});
+  H(daisy, 'Vaccination', 170, C[0], -5, {cost: amt(6), medicine: M[0]});
+  H(bella, 'Vaccination', 350, C[1], 3, {cost: amt(8)});
+  H(max, 'Deworming', 80, C[2], 10, {medicine: M[1], cost: amt(12)});
+  H(nala, 'Treatment', 6, C[3], 1, {medicine: M[2], cost: amt(18), notes: L.notes.nala});
+  H(ram, 'Vaccination', 60, C[4], 30, {cost: amt(3)});
   H(luna, 'Check-up', 20, C[5], null, {notes: L.notes.luna});
   H(woolly, 'Pregnancy check', 15, C[6], 40, {notes: L.notes.woolly});
-  H(billy, 'Injury', 25, C[7], null, {medicine: M[3], cost: 4});
+  H(billy, 'Injury', 25, C[7], null, {medicine: M[3], cost: amt(4)});
 
   for (let i = 13; i >= 0; i--) {
     const ds = addDays(td, -i), w = Math.sin(i * 1.7);
     d.production.push({id: uid(), kind: 'Milk', animalId: daisy.id, date: ds, session: 'Full day', qty: +(22 + w * 2.5).toFixed(1)});
     d.production.push({id: uid(), kind: 'Milk', animalId: bella.id, date: ds, session: 'Full day', qty: +(16 + Math.cos(i) * 1.8).toFixed(1)});
     if (i > 6 || i < 1) d.production.push({id: uid(), kind: 'Milk', animalId: nala.id, date: ds, session: 'Full day', qty: +(2.8 + w * .4).toFixed(1)});
-    d.production.push({id: uid(), kind: 'Eggs', date: ds, qty: Math.round(34 + Math.sin(i * 2.3) * 3), notes: L.flock});
     if (i % 3 === 0) {
-      d.feed.push({id: uid(), date: ds, feedType: L.feeds[0], qty: 120, cost: 45, group: 'Cattle', notes: ''});
-      d.feed.push({id: uid(), date: ds, feedType: L.feeds[1], qty: 25, cost: 18, group: 'Poultry', notes: ''});
+      d.feed.push({id: uid(), date: ds, feedType: L.feeds[0], qty: 120, cost: amt(45), group: 'Cattle', notes: ''});
+      d.feed.push({id: uid(), date: ds, feedType: L.feeds[1], qty: 50, cost: amt(20), group: 'Sheep', notes: ''});
     }
-    if (i % 4 === 0) d.feed.push({id: uid(), date: ds, feedType: L.feeds[2], qty: 20, cost: 14, group: 'Goat', notes: ''});
+    if (i % 4 === 0) d.feed.push({id: uid(), date: ds, feedType: L.feeds[2], qty: 20, cost: amt(14), group: 'Goat', notes: ''});
   }
   state.view = 'home';
 }

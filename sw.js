@@ -1,5 +1,5 @@
 // Offline cache: serve app files from cache, refresh them in the background.
-const CACHE = 'herdbook-v5';
+const CACHE = 'herdbook-v6';
 const FILES = ['./', './index.html', './i18n.js', './manifest.json', './icon.svg',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 

@@ -2,7 +2,7 @@
   "id": "./",
   "name": "HerdBook – Livestock Records",
   "short_name": "HerdBook",
-  "description": "Track animals, health records, vaccinations, feeding and milk/egg production. Arabic, English, French.",
+  "description": "Sheep, goat and cattle records: animals, health, vaccinations, feeding, milk and age by teeth. Arabic, English, French.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
