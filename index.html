@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2f6b3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HerdBook">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>HerdBook</title>
+<style>
+:root{
+  --bg:#f4f1ea;--surface:#fff;--surface2:#f8f6f1;--text:#1f2a1f;--muted:#667064;--line:#e3ded2;
+  --brand:#2f6b3a;--brand-ink:#fff;--brand-soft:#e3efe2;
+  --warn:#9a5b00;--warn-soft:#fbefd9;--danger:#b3261e;--danger-soft:#fbe4e2;
+  --shadow:0 1px 2px rgba(30,40,30,.06),0 4px 14px rgba(30,40,30,.06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#121612;--surface:#1b201b;--surface2:#222822;--text:#e8ece6;--muted:#9aa597;--line:#2e362e;
+    --brand:#7cc48a;--brand-ink:#0d1a0f;--brand-soft:#1f3323;
+    --warn:#f0b04a;--warn-soft:#3a2c14;--danger:#f2877f;--danger-soft:#3d1c1a;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+[lang=ar] body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,"Noto Sans Arabic","Geeza Pro",sans-serif;line-height:1.55}
+[dir=rtl] *{letter-spacing:0!important}
+[dir=rtl] .flip{transform:scaleX(-1)}
+body.locked{overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3{margin:0;line-height:1.25}
+.shell{max-width:480px;margin:0 auto;min-height:100vh;padding:0 16px calc(100px + env(safe-area-inset-bottom))}
+.top{position:sticky;top:0;z-index:10;background:var(--bg);display:flex;align-items:center;gap:10px;padding:calc(14px + env(safe-area-inset-top)) 0 12px}
+.top h1{font-size:24px;letter-spacing:-.01em}
+.top .grow{flex:1;min-width:0}
+.eyebrow{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grow{flex:1;min-width:0}
+.icon-btn{border:0;background:var(--surface);width:40px;height:40px;border-radius:12px;display:grid;place-items:center;box-shadow:var(--shadow);flex:none}
+.icon-btn svg{width:20px;height:20px}
+.section{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:22px 2px 8px;display:flex;justify-content:space-between;align-items:center}
+.section a,.link{color:var(--brand);text-transform:none;letter-spacing:0;font-weight:600;font-size:14px;background:none;border:0;padding:0}
+.card{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:16px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);padding:14px;border:0;text-align:start}
+.stat .v{font-size:26px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .l{font-size:13px;color:var(--muted)}
+.stat.alert .v{color:var(--danger)}
+.stat.warn .v{color:var(--warn)}
+.list{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:none;border:0;border-bottom:1px solid var(--line);text-align:start}
+.row:last-child{border-bottom:0}
+.row b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .grow>span b{display:inline}
+.row small{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .end{text-align:end;flex:none;font-variant-numeric:tabular-nums}
+.chev{color:var(--muted);flex:none;width:18px;height:18px}
+.sp{width:40px;height:40px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;font-size:22px;flex:none}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;flex:none}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);white-space:nowrap}
+.pill.ok{background:var(--brand-soft);color:var(--brand)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.danger{background:var(--danger-soft);color:var(--danger)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips.center{justify-content:center}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;white-space:nowrap}
+.chip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;padding:8px 4px;border-radius:9px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.search{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:16px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 16px;font-weight:600}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.danger{color:var(--danger);border-color:var(--danger-soft);background:var(--danger-soft)}
+.btn.small{padding:7px 12px;font-size:14px;border-radius:10px}
+.btn.block{display:block;width:100%}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn-row .btn{flex:1 1 auto}
+.stack{display:grid;gap:10px;margin-top:20px}
+.fab{position:fixed;z-index:20;bottom:calc(80px + env(safe-area-inset-bottom));inset-inline-end:max(16px,calc(50vw - 224px));border:0;background:var(--brand);color:var(--brand-ink);border-radius:16px;padding:14px 18px;font-weight:700;box-shadow:0 6px 20px rgba(20,60,30,.3);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.fab svg{width:20px;height:20px}
+.nav{position:fixed;z-index:30;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:none;padding:9px 0 8px;display:grid;justify-items:center;gap:3px;font-size:11px;color:var(--muted);font-weight:600;min-width:0}
+.nav button span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
+.nav button svg{width:22px;height:22px}
+.nav button.on{color:var(--brand)}
+svg.i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.empty{text-align:center;color:var(--muted);padding:28px 16px}
+.empty .big{font-size:36px;margin-bottom:6px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-top:14px}
+.kv div small{display:block;color:var(--muted);font-size:12px}
+.kv div span{font-weight:600}
+.hero-animal{display:flex;gap:14px;align-items:center}
+.hero-animal .sp{width:64px;height:64px;font-size:36px;border-radius:18px}
+.hero-animal h2{font-size:20px}
+.muted{color:var(--muted)}
+.note{color:var(--muted);font-size:13px;text-align:center;margin-top:18px}
+.chart{width:100%;height:auto;display:block;color:var(--brand);direction:ltr}
+.chart text{fill:var(--muted);font-size:10px}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.mini div{background:var(--surface2);border-radius:12px;padding:10px;min-width:0}
+.mini b{display:block;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini small{color:var(--muted);font-size:12px}
+/* login */
+.login{padding-top:calc(28px + env(safe-area-inset-top))}
+.hero{text-align:center;margin:20px 0 24px}
+.hero .logo{width:76px;height:76px;margin:0 auto 14px}
+.hero h1{font-size:30px;letter-spacing:-.02em}
+.hero p{color:var(--muted);margin:8px auto 0;max-width:320px}
+/* sheet */
+.sheet-wrap{position:fixed;inset:0;z-index:50}
+.sheet-wrap[hidden]{display:none}
+.backdrop{position:absolute;inset:0;background:rgba(10,20,10,.45);animation:fade .15s}
+.sheet{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;max-height:92vh;overflow:auto;background:var(--surface);border-radius:20px 20px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));animation:up .2s ease-out}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 10px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sheet-head h2{font-size:19px}
+.sheet-head .icon-btn{box-shadow:none;background:var(--surface2)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{grid-column:span 2;display:grid;gap:5px;min-width:0}
+.field.half{grid-column:span 1}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);font-size:16px;min-height:44px}
+.field textarea{min-height:76px;resize:vertical}
+.field .invalid{border-color:var(--danger);background:var(--danger-soft)}
+.req{color:var(--danger)}
+.sheet-actions{display:flex;gap:10px;margin-top:18px}
+.sheet p.msg{margin:0 0 6px;color:var(--muted)}
+/* age by teeth */
+.tooth-list{display:grid;gap:8px}
+.tooth-opt{display:flex;gap:12px;align-items:center;width:100%;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface);text-align:start}
+.tooth-opt.on{border-color:var(--brand);background:var(--brand-soft)}
+.tooth-opt b{display:block;font-weight:600}
+.tooth-opt small{color:var(--muted)}
+.tooth-svg{width:120px;height:auto;flex:none;direction:ltr}
+.tooth-svg .gum{fill:#e3a49b}
+.tooth-svg .milk{fill:var(--surface);stroke:var(--muted);stroke-width:1.2}
+.tooth-svg .perm{fill:#faf6ea;stroke:#8a8270;stroke-width:1.2}
+.how{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--muted);margin:0 0 12px}
+.result{background:var(--brand-soft);border-radius:14px;padding:14px;margin-top:14px;text-align:center}
+.result .v{font-size:24px;font-weight:700;color:var(--brand)}
+.result small{display:block;color:var(--muted);margin-top:4px}
+.toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
+.toast[hidden]{display:none}
+@keyframes up{from{transform:translate(-50%,40px)}}
+@keyframes fade{from{opacity:0}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="sheet" class="sheet-wrap" hidden></div>
+<div id="toast" class="toast" hidden></div>
+<input id="importFile" type="file" accept="application/json,.json" hidden>
+<script src="i18n.js"></script>
+<script>
+'use strict';
+/* ---------- constants ---------- */
+const KEY = 'herdbook.v1';
+const SPECIES = {Cattle:'🐄',Goat:'🐐',Sheep:'🐑',Poultry:'🐔',Pig:'🐖',Camel:'🐪',Horse:'🐎',Rabbit:'🐇',Other:'🐾'};
+const MILK_SPECIES = ['Cattle','Goat','Sheep','Camel'];
+const HEALTH_TYPES = ['Vaccination','Treatment','Deworming','Check-up','Injury','Pregnancy check','Other'];
+const STATUSES = ['Active','Sold','Deceased'];
+const LOGO = '<svg viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#2f6b3a"/><path d="M256 404V252" stroke="#f4f1ea" stroke-width="28" stroke-linecap="round"/><path d="M256 262c0-72 52-124 134-124 0 82-52 134-134 124z" fill="#f4f1ea"/><path d="M256 304c0-62-44-104-114-104 0 68 44 112 114 104z" fill="#cfe5c9"/></svg>';
+const ICONS = {
+  home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  animals:'<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+  health:'<path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/><path d="M12 10v5M9.5 12.5h5"/>',
+  production:'<path d="M4 20V11M10 20V5M16 20v-6M21 20H3"/>',
+  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  back:'<path d="M15 18l-6-6 6-6"/>',
+  chev:'<path d="M9 6l6 6-6 6"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>'
+};
+const icon = (n, cls = '') => `<svg class="i ${cls}" viewBox="0 0 24 24">${ICONS[n]}</svg>`;
+const CHEV = icon('chev', 'chev flip');
+
+/* ---------- storage ---------- */
+function load() {
+  try { const r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch (e) {}
+  return {farmers: [], currentId: null, data: {}};
+}
+let db = load();
+
+/* ---------- language ---------- */
+let lang = db.lang || (navigator.language || 'en').slice(0, 2);
+if (!LANGS[lang]) lang = 'en';
+// Arabic text with Western digits, so numbers match what farmers type into the forms.
+const LOC = () => lang === 'ar' ? 'ar-u-nu-latn' : lang;
+function t(k, v = {}) {
+  const s = T[lang]?.[k] ?? T.en[k] ?? k;
+  return s.replace(/\{(\w+)\}/g, (_, x) => v[x] ?? '');
+}
+const tv = v => ENUM[lang]?.[v] ?? v;
+const opts = list => list.map(x => [x, tv(x)]);
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.documentElement.dir = RTL.includes(lang) ? 'rtl' : 'ltr';
+}
+function langChips(center) {
+  return `<div class="chips${center ? ' center' : ''}">${Object.entries(LANGS).map(([k, n]) =>
+    `<button class="chip ${lang === k ? 'on' : ''}" data-act="setLang" data-v="${k}" lang="${k}">${n}</button>`).join('')}</div>`;
+}
+
+/* ---------- utils ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+const iso = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const today = () => iso(new Date());
+const addDays = (s, n) => { const d = new Date(s + 'T00:00'); d.setDate(d.getDate() + n); return iso(d); };
+const daysBetween = (a, b) => Math.round((new Date(b + 'T00:00') - new Date(a + 'T00:00')) / 86400000);
+const sum = (arr, k) => arr.reduce((s, x) => s + (Number(x[k]) || 0), 0);
+const fmt = (n, dp = 1) => Number(n || 0).toLocaleString(LOC(), {maximumFractionDigits: dp});
+const initials = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+function fdate(s) {
+  if (!s) return '';
+  const d = new Date(s + 'T00:00');
+  const o = {day: 'numeric', month: 'short'};
+  if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString(LOC(), o);
+}
+function age(b) {
+  if (!b) return '';
+  const now = new Date(today() + 'T00:00'), d = new Date(b + 'T00:00');
+  let m = (now.getFullYear() - d.getFullYear()) * 12 + now.getMonth() - d.getMonth();
+  if (now.getDate() < d.getDate()) m--;
+  if (m < 1) return t('age_d', {n: Math.max(0, daysBetween(b, today()))});
+  if (m < 24) return t('age_mo', {n: m});
+  return t('age_y', {n: Math.floor(m / 12)}) + (m % 12 ? ' ' + t('age_mo', {n: m % 12}) : '');
+}
+function relDue(s) {
+  const d = daysBetween(today(), s);
+  if (d < 0) return {cls: 'danger', txt: t('rel_over', {n: -d})};
+  if (d === 0) return {cls: 'warn', txt: t('rel_today')};
+  return {cls: d <= 7 ? 'warn' : '', txt: t('rel_in', {n: d})};
+}
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) { toast(t('couldNotSave')); } }
+const me = () => db.farmers.find(f => f.id === db.currentId);
+const D = () => db.data[db.currentId] || (db.data[db.currentId] = {animals: [], health: [], production: [], feed: []});
+const animal = id => D().animals.find(a => a.id === id);
+const aName = a => a ? (a.name || a.tag) : t('herdShort');
+const aEmoji = a => a ? (SPECIES[a.species] || '🐾') : '🏡';
+const money = n => (me()?.currency || '') + fmt(n, 2);
+const costLabel = () => t('f_cost') + (me().currency ? ` (${me().currency.trim()})` : '');
+function dueList() {
+  return D().health
+    .filter(h => h.nextDue && !h.followDone && animal(h.animalId)?.status === 'Active')
+    .sort((a, b) => a.nextDue.localeCompare(b.nextDue));
+}
+
+/* ---------- state & routing ---------- */
+const state = {view: 'home', param: null, q: '', species: 'All', status: 'Active', prod: 'Milk'};
+function go(v, p) { state.view = v; state.param = p || null; render(); window.scrollTo(0, 0); }
+
+function render() {
+  applyLang();
+  const app = document.getElementById('app');
+  if (!me()) { app.innerHTML = viewLogin(); return; }
+  const v = state.view;
+  const body = v === 'animals' ? viewAnimals()
+    : v === 'animal' ? viewAnimal(state.param)
+    : v === 'health' ? viewHealth()
+    : v === 'production' ? viewProduction()
+    : v === 'profile' ? viewProfile()
+    : viewHome();
+  app.innerHTML = `<div class="shell">${body}</div>${nav()}`;
+  if (state.view === 'animals') renderAnimalList();
+}
+
+function nav() {
+  const tabs = ['home', 'animals', 'health', 'production', 'profile'];
+  const cur = state.view === 'animal' ? 'animals' : state.view;
+  return `<nav class="nav">${tabs.map(k => `<button class="${cur === k ? 'on' : ''}" data-go="${k}">${icon(k)}<span>${t('nav_' + k)}</span></button>`).join('')}</nav>`;
+}
+function header(title, {back, right = ''} = {}) {
+  return `<header class="top">${back ? `<button class="icon-btn" data-go="${back}" aria-label="${t('close')}">${icon('back', 'flip')}</button>` : ''}
+    <div class="grow"><div class="eyebrow">${esc(me().farm)}</div><h1>${esc(title)}</h1></div>${right}</header>`;
+}
+
+/* ---------- views ---------- */
+function viewLogin() {
+  const list = db.farmers.map(f => `<button class="row" data-act="login" data-id="${f.id}">
+      <span class="avatar">${esc(initials(f.name))}</span>
+      <span class="grow"><b>${esc(f.name)}</b><small>${esc(f.farm)}${f.location ? ' · ' + esc(f.location) : ''}</small></span>
+      ${CHEV}</button>`).join('');
+  return `<div class="shell login">
+    ${langChips(true)}
+    <div class="hero"><div class="logo">${LOGO}</div><h1>HerdBook</h1><p>${t('appTag')}</p></div>
+    ${db.farmers.length ? `<h2 class="section">${t('chooseAccount')}</h2><div class="list">${list}</div>` : ''}
+    <div class="stack">
+      <button class="btn primary block" data-act="register">${t('createAccount')}</button>
+      <button class="btn block" data-act="demo">${t('exploreDemo')}</button>
+    </div>
+    <p class="note">${t('demoNote')}</p>
+  </div>`;
+}
+
+function viewHome() {
+  const d = D(), td = today();
+  const active = d.animals.filter(a => a.status === 'Active');
+  const due = dueList();
+  const overdue = due.filter(h => h.nextDue < td).length;
+  const soon = due.filter(h => h.nextDue >= td && daysBetween(td, h.nextDue) <= 14).length;
+  const milk = sum(d.production.filter(p => p.kind === 'Milk' && p.date === td), 'qty');
+  const eggs = sum(d.production.filter(p => p.kind === 'Eggs' && p.date === td), 'qty');
+  const counts = {};
+  active.forEach(a => counts[a.species] = (counts[a.species] || 0) + 1);
+  const hour = new Date().getHours();
+  const greet = t(hour < 12 ? 'goodMorning' : hour < 18 ? 'goodAfternoon' : 'goodEvening');
+
+  const byDate = (a, b) => b.date.localeCompare(a.date);
+  const recent = [
+    ...d.health.slice().sort(byDate).slice(0, 4).map(h => ({date: h.date, html: `${aEmoji(animal(h.animalId))} <b>${esc(tv(h.type))}</b>: ${esc(h.title)}`, sub: aName(animal(h.animalId))})),
+    ...d.feed.slice().sort(byDate).slice(0, 2).map(f => ({date: f.date, html: `🌾 <b>${tv('Feed')}</b>: ${esc(f.feedType)}`, sub: `${fmt(f.qty)} ${t('u_kg')} · ${tv(f.group)}`})),
+  ].sort(byDate);
+
+  const prodVal = milk ? `${fmt(milk)} ${t('u_L')}` : fmt(eggs, 0);
+  const prodLbl = milk || !eggs ? t('milkToday') + (milk && eggs ? ' · ' + t('eggsN', {n: fmt(eggs, 0)}) : '') : t('eggsToday');
+
+  return `${header(t('greet', {g: greet, name: me().name.split(' ')[0]}))}
+    <div class="stats">
+      <button class="stat" data-go="animals"><div class="v">${fmt(active.length, 0)}</div><div class="l">${t('activeAnimals')}</div></button>
+      <button class="stat ${overdue ? 'alert' : ''}" data-go="health"><div class="v">${fmt(overdue, 0)}</div><div class="l">${t('overdueTasks')}</div></button>
+      <button class="stat ${soon ? 'warn' : ''}" data-go="health"><div class="v">${fmt(soon, 0)}</div><div class="l">${t('dueIn14')}</div></button>
+      <button class="stat" data-act="openProd" data-k="${eggs && !milk ? 'Eggs' : 'Milk'}"><div class="v">${prodVal}</div><div class="l">${prodLbl}</div></button>
+    </div>
+    ${Object.keys(counts).length ? `<h2 class="section">${t('herd')}</h2><div class="chips">${Object.entries(counts).map(([s, n]) =>
+      `<button class="chip" data-act="filterSpecies" data-v="${s}" data-nav="1">${SPECIES[s] || '🐾'} ${esc(tv(s))} · ${fmt(n, 0)}</button>`).join('')}</div>` : ''}
+    <h2 class="section">${t('upcomingCare')} ${due.length > 5 ? `<button class="link" data-go="health">${t('seeAll')}</button>` : ''}</h2>
+    ${due.length ? `<div class="list">${due.slice(0, 5).map(dueRow).join('')}</div>`
+      : `<div class="list"><div class="empty"><div class="big">✅</div>${t('noUpcoming')}</div></div>`}
+    <h2 class="section">${t('quickAdd')}</h2>
+    <div class="btn-row">
+      <button class="btn small" data-act="addAnimal">${t('addAnimalShort')}</button>
+      <button class="btn small" data-act="addHealth">${t('addHealthShort')}</button>
+      <button class="btn small" data-act="addProd" data-k="Milk">${t('addMilkShort')}</button>
+      <button class="btn small" data-act="addProd" data-k="Eggs">${t('addEggsShort')}</button>
+      <button class="btn small" data-act="addProd" data-k="Feed">${t('addFeedShort')}</button>
+      <button class="btn small" data-act="teeth">🦷 ${t('teethTool')}</button>
+    </div>
+    ${recent.length ? `<h2 class="section">${t('recentActivity')}</h2><div class="list">${recent.map(r =>
+      `<div class="row"><span class="grow"><span style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.html}</span><small>${esc(r.sub)}</small></span><span class="end muted">${fdate(r.date)}</span></div>`).join('')}</div>` : ''}`;
+}
+
+function dueRow(h) {
+  const a = animal(h.animalId), r = relDue(h.nextDue);
+  return `<div class="row"><span class="sp">${aEmoji(a)}</span>
+    <button class="grow" style="all:unset;flex:1;min-width:0;cursor:pointer" data-go="animal:${a.id}">
+      <b>${esc(h.title)}</b><small>${esc(aName(a))} · ${esc(tv(h.type))} · ${fdate(h.nextDue)}</small></button>
+    <span class="end" style="display:grid;gap:6px;justify-items:end"><span class="pill ${r.cls}">${r.txt}</span>
+    <button class="btn small" data-act="logDue" data-id="${h.id}">${t('done')}</button></span></div>`;
+}
+
+function viewAnimals() {
+  const present = [...new Set(D().animals.map(a => a.species))];
+  return `${header(t('nav_animals'))}
+    <input class="search" id="q" type="search" placeholder="${esc(t('searchAnimals'))}" value="${esc(state.q)}" autocomplete="off">
+    <div class="chips" style="margin-top:10px">${['All', ...present].map(s =>
+      `<button class="chip ${state.species === s ? 'on' : ''}" data-act="filterSpecies" data-v="${s}">${s === 'All' ? t('all') : (SPECIES[s] || '') + ' ' + esc(tv(s))}</button>`).join('')}</div>
+    <div class="seg" style="margin:8px 0 14px">${[...STATUSES, 'All'].map(s =>
+      `<button class="${state.status === s ? 'on' : ''}" data-act="filterStatus" data-v="${s}">${s === 'All' ? t('all') : tv(s)}</button>`).join('')}</div>
+    <div id="list"></div>
+    <button class="fab" data-act="addAnimal">${icon('plus')} ${t('addAnimal')}</button>`;
+}
+function renderAnimalList() {
+  const el = document.getElementById('list'); if (!el) return;
+  const q = state.q.trim().toLowerCase();
+  const due = dueList();
+  const items = D().animals.filter(a =>
+      (state.species === 'All' || a.species === state.species) &&
+      (state.status === 'All' || a.status === state.status) &&
+      (!q || [a.tag, a.name, a.breed].some(x => String(x || '').toLowerCase().includes(q))))
+    .sort((a, b) => a.tag.localeCompare(b.tag, undefined, {numeric: true}));
+  if (!items.length) {
+    el.innerHTML = `<div class="list"><div class="empty"><div class="big">🐾</div>${D().animals.length ? t('noMatch') : t('noAnimals')}</div></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="list">${items.map(a => {
+    const next = due.find(h => h.animalId === a.id);
+    const r = next && relDue(next.nextDue);
+    const flag = r && r.cls ? `<span class="pill ${r.cls}">${r.cls === 'danger' ? t('overdue') : t('dueSoon')}</span>` : '';
+    const st = a.status !== 'Active' ? `<span class="pill">${esc(tv(a.status))}</span>` : '';
+    return `<button class="row" data-go="animal:${a.id}"><span class="sp">${aEmoji(a)}</span>
+      <span class="grow"><b>${esc(a.name || a.tag)}</b><small><bdi>#${esc(a.tag)}</bdi>${a.breed ? ' · ' + esc(a.breed) : ''} · ${esc(tv(a.sex))}${a.birth ? ' · ' + (a.birthEst ? '≈' : '') + age(a.birth) : ''}</small></span>
+      ${flag}${st}${CHEV}</button>`;
+  }).join('')}</div><p class="note">${t('animalCount', {n: fmt(items.length, 0)})}</p>`;
+}
+
+function viewAnimal(id) {
+  const a = animal(id);
+  if (!a) { state.view = 'animals'; return viewAnimals(); }
+  const d = D(), kg = t('u_kg'), L = t('u_L');
+  const hist = d.health.filter(h => h.animalId === id).sort((x, y) => y.date.localeCompare(x.date));
+  const weights = (a.weights || []).slice().sort((x, y) => x.date.localeCompare(y.date));
+  const lastW = weights[weights.length - 1];
+  const prod = d.production.filter(p => p.animalId === id).sort((x, y) => y.date.localeCompare(x.date));
+  const canMilk = MILK_SPECIES.includes(a.species) && a.sex === 'Female';
+  const mother = a.motherTag && d.animals.find(x => x.tag === a.motherTag);
+  const statusCls = a.status === 'Active' ? 'ok' : a.status === 'Deceased' ? 'danger' : '';
+  return `${header(a.name || a.tag, {back: 'animals', right: `<button class="icon-btn" data-act="editAnimal" data-id="${a.id}" aria-label="${t('editAnimal')}">${icon('edit')}</button>`})}
+    <div class="card">
+      <div class="hero-animal"><span class="sp">${aEmoji(a)}</span>
+        <div class="grow"><h2><bdi>#${esc(a.tag)}</bdi></h2><div class="muted">${esc(tv(a.species))}${a.breed ? ' · ' + esc(a.breed) : ''}</div></div>
+        <span class="pill ${statusCls}">${esc(tv(a.status))}</span></div>
+      <div class="kv">
+        <div><small>${t('sex')}</small><span>${esc(tv(a.sex))}</span></div>
+        <div><small>${t('age')}</small><span>${a.birth ? (a.birthEst ? '≈ ' : '') + age(a.birth) : '—'}</span></div>
+        <div><small>${t('born')}</small><span>${a.birth ? (a.birthEst ? `≈ ${fdate(a.birth)} <small style="display:inline">(${t('estimated')})</small>` : fdate(a.birth)) : '—'}</span></div>
+        <div><small>${t('weight')}</small><span>${lastW ? fmt(lastW.kg) + ' ' + kg : '—'}</span></div>
+        ${a.motherTag ? `<div><small>${t('mother')}</small><span>${mother ? `<button class="link" data-go="animal:${mother.id}">${esc(aName(mother))}</button>` : esc(a.motherTag)}</span></div>` : ''}
+        ${a.status !== 'Active' && a.statusDate ? `<div><small>${t('statusOn', {s: tv(a.status)})}</small><span>${fdate(a.statusDate)}</span></div>` : ''}
+      </div>
+      ${a.notes ? `<p class="muted" style="margin:14px 0 0">${esc(a.notes)}</p>` : ''}
+    </div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn small" data-act="addHealth" data-animal="${a.id}">${t('plusHealth')}</button>
+      <button class="btn small" data-act="addWeight" data-id="${a.id}">${t('plusWeight')}</button>
+      ${canMilk ? `<button class="btn small" data-act="addProd" data-k="Milk" data-animal="${a.id}">${t('plusMilk')}</button>` : ''}
+      ${TEETH[a.species] ? `<button class="btn small" data-act="teeth" data-id="${a.id}">🦷 ${t('teethTool')}</button>` : ''}
+    </div>
+    <h2 class="section">${t('healthHistory')}</h2>
+    ${hist.length ? `<div class="list">${hist.map(healthRow).join('')}</div>` : `<div class="list"><div class="empty">${t('noHealth')}</div></div>`}
+    <h2 class="section">${t('weight')}</h2>
+    ${weights.length ? `<div class="card">${weights.length > 1 ? lineChart(weights.map(w => ({x: w.date, y: w.kg})), kg) : ''}
+      <div class="list" style="box-shadow:none;margin-top:6px">${weights.slice().reverse().map((w, i, arr) => {
+        const prev = arr[i + 1]; const diff = prev ? w.kg - prev.kg : null;
+        return `<div class="row" style="padding:8px 0"><span class="grow">${fdate(w.date)}</span><span class="end"><b>${fmt(w.kg)} ${kg}</b>${diff !== null ? `<small dir="ltr">${diff >= 0 ? '+' : ''}${fmt(diff)} ${kg}</small>` : ''}</span></div>`;
+      }).join('')}</div></div>` : `<div class="list"><div class="empty">${t('noWeights')}</div></div>`}
+    ${prod.length ? `<h2 class="section">${t('milk30')}</h2><div class="card">${(() => {
+        const last = prod.filter(p => daysBetween(p.date, today()) < 30);
+        const days = new Set(last.map(p => p.date)).size || 1;
+        return `<div class="mini"><div><b>${fmt(sum(last, 'qty'))} ${L}</b><small>${t('total')}</small></div><div><b>${fmt(sum(last, 'qty') / days)} ${L}</b><small>${t('perDay')}</small></div><div><b>${fmt(last.length, 0)}</b><small>${t('entries')}</small></div></div>`;
+      })()}</div>` : ''}
+    <div style="margin-top:24px"><button class="btn danger block" data-act="deleteAnimal" data-id="${a.id}">${t('deleteAnimal')}</button></div>`;
+}
+
+function healthRow(h) {
+  const a = animal(h.animalId);
+  const r = h.nextDue && !h.followDone ? relDue(h.nextDue) : null;
+  return `<button class="row" data-act="editHealth" data-id="${h.id}"><span class="sp">${aEmoji(a)}</span>
+    <span class="grow"><b>${esc(h.title)}</b><small>${esc(tv(h.type))} · ${esc(aName(a))}${h.medicine ? ' · ' + esc(h.medicine) : ''}${h.cost ? ' · ' + money(h.cost) : ''}</small></span>
+    <span class="end"><small class="muted">${fdate(h.date)}</small>${r ? `<span class="pill ${r.cls}">${t('next', {d: fdate(h.nextDue)})}</span>` : ''}</span></button>`;
+}
+
+function viewHealth() {
+  const due = dueList();
+  const all = D().health.slice().sort((a, b) => b.date.localeCompare(a.date));
+  const yr = all.filter(h => daysBetween(h.date, today()) <= 365);
+  return `${header(t('healthTitle'))}
+    <div class="mini"><div><b>${fmt(due.filter(h => h.nextDue < today()).length, 0)}</b><small>${t('overdue')}</small></div>
+      <div><b>${fmt(due.length, 0)}</b><small>${t('scheduled')}</small></div>
+      <div><b>${money(sum(yr, 'cost'))}</b><small>${t('vetCost12')}</small></div></div>
+    <h2 class="section">${t('vaccFollow')}</h2>
+    ${due.length ? `<div class="list">${due.map(dueRow).join('')}</div>` : `<div class="list"><div class="empty"><div class="big">✅</div>${t('nothingScheduled')}</div></div>`}
+    <h2 class="section">${t('allRecords')}</h2>
+    ${all.length ? `<div class="list">${all.slice(0, 60).map(healthRow).join('')}</div>` : `<div class="list"><div class="empty">${t('noHealth')}</div></div>`}
+    <button class="fab" data-act="addHealth">${icon('plus')} ${t('addRecord')}</button>`;
+}
+
+function viewProduction() {
+  const k = state.prod, d = D(), td = today();
+  const entries = (k === 'Feed' ? d.feed : d.production.filter(p => p.kind === k)).slice().sort((a, b) => b.date.localeCompare(a.date));
+  const unit = k === 'Milk' ? t('u_L') : k === 'Eggs' ? '' : t('u_kg');
+  const days = [];
+  for (let i = 13; i >= 0; i--) { const ds = addDays(td, -i); days.push({x: ds, y: entries.filter(e => e.date === ds).reduce((s, e) => s + (Number(e.qty) || 0), 0)}); }
+  const last7 = days.slice(7).reduce((s, x) => s + x.y, 0);
+  const prev7 = days.slice(0, 7).reduce((s, x) => s + x.y, 0);
+  const change = prev7 ? Math.round((last7 - prev7) / prev7 * 100) : null;
+  const u = unit ? ' ' + unit : '';
+  const feedCost = k === 'Feed' ? sum(entries.filter(e => daysBetween(e.date, td) < 30), 'cost') : 0;
+  return `${header(t('production'))}
+    <div class="seg" style="margin-bottom:14px">${['Milk', 'Eggs', 'Feed'].map(x =>
+      `<button class="${k === x ? 'on' : ''}" data-act="prodTab" data-v="${x}">${x === 'Milk' ? '🥛' : x === 'Eggs' ? '🥚' : '🌾'} ${tv(x)}</button>`).join('')}</div>
+    <div class="card">
+      <div class="mini">
+        <div><b>${fmt(days[13].y)}${u}</b><small>${t('today')}</small></div>
+        <div><b>${fmt(last7)}${u}</b><small>${t('last7')}</small></div>
+        ${k === 'Feed' ? `<div><b>${money(feedCost)}</b><small>${t('cost30')}</small></div>`
+          : `<div><b dir="ltr">${change === null ? '—' : (change >= 0 ? '+' : '') + fmt(change, 0) + '%'}</b><small>${t('vsPrior')}</small></div>`}
+      </div>
+      ${barChart(days, unit)}
+    </div>
+    <h2 class="section">${t('log_' + k)}</h2>
+    ${entries.length ? `<div class="list">${entries.slice(0, 50).map(e => k === 'Feed'
+      ? `<button class="row" data-act="editProd" data-k="Feed" data-id="${e.id}"><span class="sp">🌾</span><span class="grow"><b>${esc(e.feedType)}</b><small>${esc(tv(e.group))}${e.cost ? ' · ' + money(e.cost) : ''}${e.notes ? ' · ' + esc(e.notes) : ''}</small></span><span class="end"><b>${fmt(e.qty)}${u}</b><small class="muted">${fdate(e.date)}</small></span></button>`
+      : `<button class="row" data-act="editProd" data-k="${k}" data-id="${e.id}"><span class="sp">${k === 'Eggs' ? '🥚' : aEmoji(animal(e.animalId))}</span><span class="grow"><b>${k === 'Eggs' ? esc(e.notes || t('collection')) : esc(aName(animal(e.animalId)))}</b><small>${fdate(e.date)}${e.session ? ' · ' + esc(tv(e.session)) : ''}</small></span><span class="end"><b>${fmt(e.qty)}${u}</b></span></button>`
+    ).join('')}</div>` : `<div class="list"><div class="empty">${t('noEntries')}</div></div>`}
+    <button class="fab" data-act="addProd" data-k="${k}">${icon('plus')} ${t('logBtn_' + k)}</button>`;
+}
+
+function viewProfile() {
+  const f = me(), d = D();
+  return `${header(t('profile'))}
+    <div class="card"><div class="hero-animal"><span class="avatar" style="width:56px;height:56px;font-size:20px">${esc(initials(f.name))}</span>
+      <div class="grow"><h2>${esc(f.name)}</h2><div class="muted">${esc(f.farm)}${f.location ? ' · ' + esc(f.location) : ''}</div>${f.phone ? `<div class="muted" dir="ltr" style="text-align:start">${esc(f.phone)}</div>` : ''}</div>
+      <button class="icon-btn" data-act="editProfile" aria-label="${t('editProfile')}">${icon('edit')}</button></div>
+      <div class="kv"><div><small>${t('animalsLbl')}</small><span>${fmt(d.animals.length, 0)}</span></div><div><small>${t('healthRecords')}</small><span>${fmt(d.health.length, 0)}</span></div>
+      <div><small>${t('prodEntries')}</small><span>${fmt(d.production.length, 0)}</span></div><div><small>${t('memberSince')}</small><span>${fdate(f.createdAt)}</span></div></div></div>
+    <h2 class="section">${t('language')}</h2>
+    ${langChips(false)}
+    <h2 class="section">${t('data')}</h2>
+    <div class="list">
+      <button class="row" data-act="export"><span class="grow"><b>${t('exportBackup')}</b><small>${t('exportSub')}</small></span>${CHEV}</button>
+      <button class="row" data-act="import"><span class="grow"><b>${t('importBackup')}</b><small>${t('importSub')}</small></span>${CHEV}</button>
+    </div>
+    <h2 class="section">${t('account')}</h2>
+    <div class="list">
+      <button class="row" data-act="logout"><span class="grow"><b>${t('switchAccount')}</b><small>${t('accountsOnDevice', {n: fmt(db.farmers.length, 0)})}</small></span>${CHEV}</button>
+      <button class="row" data-act="deleteAccount"><span class="grow"><b style="color:var(--danger)">${t('deleteAccount')}</b><small>${t('deleteAccountSub')}</small></span></button>
+    </div>
+    <p class="note">${t('footer')}</p>`;
+}
+
+/* ---------- charts ---------- */
+function barChart(days, unit) {
+  const W = 320, H = 130, pad = 18, max = Math.max(...days.map(d => d.y), 1);
+  const bw = (W - pad) / days.length;
+  const bars = days.map((d, i) => {
+    const h = (d.y / max) * (H - 34);
+    const x = pad + i * bw + 3, y = H - 18 - h;
+    const day = new Date(d.x + 'T00:00').getDate();
+    return `<rect x="${x}" y="${y}" width="${bw - 6}" height="${Math.max(h, d.y ? 2 : 0)}" rx="3" fill="currentColor" opacity="${i === days.length - 1 ? 1 : .55}"><title>${fdate(d.x)}: ${fmt(d.y)} ${unit}</title></rect>
+      ${i % 2 === 1 ? `<text x="${x + (bw - 6) / 2}" y="${H - 4}" text-anchor="middle">${day}</text>` : ''}`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t('last14'))}">
+    <line x1="${pad}" x2="${W}" y1="${H - 18}" y2="${H - 18}" stroke="var(--line)"/>
+    <text x="0" y="12">${fmt(max)}</text>${bars}</svg>`;
+}
+function lineChart(pts, unit) {
+  const W = 320, H = 110, pad = 8;
+  const ys = pts.map(p => p.y), min = Math.min(...ys), max = Math.max(...ys), span = max - min || 1;
+  const t0 = new Date(pts[0].x).getTime(), t1 = new Date(pts[pts.length - 1].x).getTime(), ts = t1 - t0 || 1;
+  const xy = pts.map(p => [pad + (new Date(p.x).getTime() - t0) / ts * (W - 2 * pad), pad + 14 + (1 - (p.y - min) / span) * (H - 2 * pad - 28)]);
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t('weightTrend'))}">
+    <polyline points="${xy.map(p => p.join(',')).join(' ')}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+    ${xy.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="currentColor"/>`).join('')}
+    <text x="${pad}" y="12">${fmt(max)} ${unit}</text><text x="${pad}" y="${H - 2}">${fmt(min)} ${unit}</text></svg>`;
+}
+
+/* ---------- sheets & forms ---------- */
+let sheetCtx = null;
+function fieldHtml(f, v) {
+  const val = v[f.name] ?? f.value ?? '';
+  const req = f.required ? ' <span class="req">*</span>' : '';
+  let input;
+  if (f.type === 'select') {
+    input = `<select name="${f.name}">${f.options.map(o => { const [ov, ol] = Array.isArray(o) ? o : [o, o];
+      return `<option value="${esc(ov)}"${String(ov) === String(val) ? ' selected' : ''}>${esc(ol)}</option>`; }).join('')}</select>`;
+  } else if (f.type === 'textarea') {
+    input = `<textarea name="${f.name}" placeholder="${esc(f.placeholder || '')}">${esc(val)}</textarea>`;
+  } else {
+    input = `<input name="${f.name}" type="${f.type || 'text'}" value="${esc(val)}" placeholder="${esc(f.placeholder || '')}"${f.type === 'number' ? ' inputmode="decimal" step="any" min="0"' : ''}${f.type === 'tel' ? ' dir="ltr"' : ''}>`;
+  }
+  return `<div class="field${f.half ? ' half' : ''}"><label>${esc(f.label)}${req}</label>${input}</div>`;
+}
+function openSheet(html) {
+  const s = document.getElementById('sheet');
+  s.innerHTML = `<div class="backdrop" data-act="closeSheet"></div>${html}`;
+  s.hidden = false; document.body.classList.add('locked');
+}
+function closeSheet() {
+  const s = document.getElementById('sheet');
+  s.hidden = true; s.innerHTML = ''; sheetCtx = null; document.body.classList.remove('locked');
+}
+function openForm({title, fields, values = {}, submit = t('save'), onSubmit, onDelete}) {
+  openSheet(`<form class="sheet" id="f" novalidate><div class="grab"></div>
+    <div class="sheet-head"><h2>${esc(title)}</h2><button type="button" class="icon-btn" data-act="closeSheet" aria-label="${t('close')}">✕</button></div>
+    <div class="fields">${fields.map(f => fieldHtml(f, values)).join('')}</div>
+    <div class="sheet-actions">${onDelete ? `<button type="button" class="btn danger" data-act="sheetDelete">${t('delete')}</button>` : ''}
+      <button class="btn primary grow" type="submit">${esc(submit)}</button></div></form>`);
+  sheetCtx = {onDelete};
+  const form = document.getElementById('f');
+  form.addEventListener('submit', ev => {
+    ev.preventDefault();
+    const vals = {}; let bad = null;
+    fields.forEach(f => {
+      const el = form.elements[f.name];
+      el.classList.remove('invalid');
+      let v = el.value.trim();
+      if (f.type === 'number') v = v === '' ? null : Number(v);
+      if (f.required && (v === '' || v === null || Number.isNaN(v))) { el.classList.add('invalid'); bad = bad || el; }
+      vals[f.name] = v;
+    });
+    if (bad) { bad.focus(); toast(t('fillRequired')); return; }
+    if (onSubmit(vals) !== false) { save(); closeSheet(); render(); }
+  });
+}
+function openConfirm(msg, yes, onYes) {
+  openSheet(`<div class="sheet"><div class="grab"></div><div class="sheet-head"><h2>${t('areYouSure')}</h2></div>
+    <p class="msg">${esc(msg)}</p>
+    <div class="sheet-actions"><button class="btn grow" data-act="closeSheet">${t('cancel')}</button><button class="btn danger grow" data-act="confirmYes">${esc(yes)}</button></div></div>`);
+  sheetCtx = {onYes};
+}
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.hidden = true, 2200);
+}
+
+/* ---------- forms per entity ---------- */
+const animalOptions = (o = {}) => {
+  const list = D().animals.filter(a => a.status === 'Active' || a.id === o.include)
+    .filter(a => !o.milk || (MILK_SPECIES.includes(a.species) && a.sex === 'Female'))
+    .sort((a, b) => a.tag.localeCompare(b.tag, undefined, {numeric: true}))
+    .map(a => { const tag = '⁨#' + a.tag + '⁩'; // isolate so the tag reads correctly inside Arabic text
+      return [a.id, `${SPECIES[a.species] || ''} ${a.name ? a.name + ' (' + tag + ')' : tag}`]; });
+  return o.herd ? [['', t('wholeHerd')], ...list] : list;
+};
+
+function animalForm(a) {
+  const isNew = !a;
+  const fields = [
+    {name: 'tag', label: t('f_tag'), required: true, half: true, placeholder: t('ph_tag')},
+    {name: 'name', label: t('f_name'), half: true, placeholder: t('optional')},
+    {name: 'species', label: t('f_species'), type: 'select', options: opts(Object.keys(SPECIES)), half: true},
+    {name: 'breed', label: t('f_breed'), half: true},
+    {name: 'sex', label: t('f_sex'), type: 'select', options: opts(['Female', 'Male']), half: true},
+    {name: 'birth', label: t('f_birth'), type: 'date', half: true},
+    ...(isNew ? [{name: 'weight', label: t('f_weightNow'), type: 'number', half: true}] : [{name: 'status', label: t('f_status'), type: 'select', options: opts(STATUSES), half: true}]),
+    {name: 'motherTag', label: t('f_motherTag'), half: true, placeholder: t('optional')},
+    {name: 'notes', label: t('f_notes'), type: 'textarea', placeholder: t('ph_animalNotes')}
+  ];
+  openForm({
+    title: isNew ? t('addAnimal') : t('editAnimal'), fields, values: a || {species: state.species !== 'All' ? state.species : 'Cattle', sex: 'Female'},
+    submit: isNew ? t('addAnimal') : t('save'),
+    onSubmit: v => {
+      if (D().animals.some(x => x.tag.toLowerCase() === v.tag.toLowerCase() && x.id !== a?.id)) { toast(t('tagUsed', {tag: v.tag})); return false; }
+      if (v.birth && v.birth > today()) { toast(t('birthFuture')); return false; }
+      if (isNew) {
+        const n = {id: uid(), tag: v.tag, name: v.name, species: v.species, breed: v.breed, sex: v.sex, birth: v.birth, status: 'Active',
+          motherTag: v.motherTag, notes: v.notes, weights: v.weight ? [{date: today(), kg: v.weight}] : [], createdAt: today()};
+        D().animals.push(n); state.view = 'animal'; state.param = n.id; toast(t('animalAdded'));
+      } else {
+        if (v.status !== a.status) a.statusDate = today();
+        if (v.birth !== a.birth) a.birthEst = false;
+        Object.assign(a, v); toast(t('saved'));
+      }
+    }
+  });
+}
+
+function healthForm(h, preset = {}) {
+  const animals = animalOptions({include: h?.animalId || preset.animalId});
+  if (!animals.length) { toast(t('addAnimalFirst')); return; }
+  openForm({
+    title: h ? t('editHealth') : t('newHealth'),
+    values: h || {date: today(), type: 'Vaccination', ...preset},
+    fields: [
+      {name: 'animalId', label: t('f_animal'), type: 'select', options: animals},
+      {name: 'type', label: t('f_type'), type: 'select', options: opts(HEALTH_TYPES), half: true},
+      {name: 'date', label: t('f_date'), type: 'date', required: true, half: true},
+      {name: 'title', label: t('f_what'), required: true, placeholder: t('ph_what')},
+      {name: 'medicine', label: t('f_medicine'), half: true},
+      {name: 'cost', label: costLabel(), type: 'number', half: true},
+      {name: 'nextDue', label: t('f_nextDue'), type: 'date'},
+      {name: 'notes', label: t('f_notes'), type: 'textarea'}
+    ],
+    onSubmit: v => {
+      if (v.nextDue && v.nextDue < v.date) { toast(t('nextAfter')); return false; }
+      if (h) { if (v.nextDue !== h.nextDue) h.followDone = false; Object.assign(h, v); toast(t('saved')); }
+      else {
+        D().health.push({id: uid(), ...v});
+        if (preset.fromId) { const src = D().health.find(x => x.id === preset.fromId); if (src) src.followDone = true; }
+        toast(t('healthAdded'));
+      }
+    },
+    onDelete: h && (() => openConfirm(t('deleteQ', {x: h.title}), t('delete'), () => { D().health = D().health.filter(x => x.id !== h.id); toast(t('deleted')); }))
+  });
+}
+
+function prodForm(kind, e, preset = {}) {
+  const isFeed = kind === 'Feed';
+  const fields = kind === 'Milk' ? [
+      {name: 'animalId', label: t('f_animal'), type: 'select', options: animalOptions({herd: true, milk: true, include: e?.animalId})},
+      {name: 'date', label: t('f_date'), type: 'date', required: true, half: true},
+      {name: 'session', label: t('f_session'), type: 'select', options: opts(['Morning', 'Evening', 'Full day']), half: true},
+      {name: 'qty', label: t('f_milkL'), type: 'number', required: true}]
+    : kind === 'Eggs' ? [
+      {name: 'date', label: t('f_date'), type: 'date', required: true, half: true},
+      {name: 'qty', label: t('f_eggs'), type: 'number', required: true, half: true},
+      {name: 'notes', label: t('f_flock'), placeholder: t('ph_flock')}]
+    : [
+      {name: 'date', label: t('f_date'), type: 'date', required: true, half: true},
+      {name: 'group', label: t('f_fedTo'), type: 'select', options: opts(['All animals', ...Object.keys(SPECIES)]), half: true},
+      {name: 'feedType', label: t('f_feedType'), required: true, placeholder: t('ph_feed')},
+      {name: 'qty', label: t('f_qtyKg'), type: 'number', required: true, half: true},
+      {name: 'cost', label: costLabel(), type: 'number', half: true},
+      {name: 'notes', label: t('f_notes')}];
+  const list = () => isFeed ? D().feed : D().production;
+  openForm({
+    title: e ? t('editEntry') : t('logBtn_' + kind), fields,
+    values: e || {date: today(), session: new Date().getHours() < 12 ? 'Morning' : 'Evening', group: 'All animals', ...preset},
+    onSubmit: v => {
+      if (v.qty < 0) { toast(t('qtyNeg')); return false; }
+      if (e) Object.assign(e, v);
+      else list().push(isFeed ? {id: uid(), ...v} : {id: uid(), kind, ...v});
+      toast(e ? t('saved') : t('logged'));
+    },
+    onDelete: e && (() => openConfirm(t('deleteEntry'), t('delete'), () => {
+      if (isFeed) D().feed = D().feed.filter(x => x.id !== e.id); else D().production = D().production.filter(x => x.id !== e.id);
+      toast(t('deleted'));
+    }))
+  });
+}
+
+function profileForm(f) {
+  openForm({
+    title: f ? t('editProfile') : t('createAccount'), submit: f ? t('save') : t('createAccountBtn'),
+    values: f || {currency: ''},
+    fields: [
+      {name: 'name', label: t('f_yourName'), required: true},
+      {name: 'farm', label: t('f_farm'), required: true},
+      {name: 'location', label: t('f_location'), half: true},
+      {name: 'phone', label: t('f_phone'), type: 'tel', half: true},
+      {name: 'currency', label: t('f_currency'), half: true, placeholder: t('ph_currency')}
+    ],
+    onSubmit: v => {
+      if (v.currency && !/\s$/.test(v.currency) && /[^\s$€£¥]$/.test(v.currency)) v.currency += ' ';
+      if (f) { Object.assign(f, v); toast(t('profileSaved')); return; }
+      const n = {id: uid(), ...v, createdAt: today()};
+      db.farmers.push(n); db.currentId = n.id; D(); state.view = 'home'; toast(t('welcome', {name: v.name.split(' ')[0]}));
+    }
+  });
+}
+
+/* ---------- age by teeth ---------- */
+// Lower-jaw incisors. Each stage: [key, permanent teeth, wear (0 none, 1 worn, 2 broken), min age, max age (null = open)] in years.
+// Typical ranges only; breed, feeding and region shift them.
+const SHEEP_TEETH = {n: 8, stages: [['milk', 0, 0, 0, 1], ['p2', 2, 0, 1, 1.5], ['p4', 4, 0, 1.5, 2.5], ['p6', 6, 0, 2.5, 3], ['full', 8, 0, 3, 4], ['worn', 8, 1, 4, 6], ['broken', 8, 2, 6, null]]};
+const TEETH = {
+  Cattle: {n: 8, stages: [['milk', 0, 0, 0, 2], ['p2', 2, 0, 1.5, 2.5], ['p4', 4, 0, 2.5, 3], ['p6', 6, 0, 3, 3.5], ['full', 8, 0, 3.5, 5], ['worn', 8, 1, 5, 9], ['broken', 8, 2, 9, null]]},
+  Sheep: SHEEP_TEETH,
+  Goat: SHEEP_TEETH,
+  // Camels have 6 lower incisors; the canines come in after them.
+  Camel: {n: 6, stages: [['milk', 0, 0, 0, 4.5], ['p2', 2, 0, 4.5, 5.5], ['p4', 4, 0, 5.5, 6.5], ['p6', 6, 0, 6.5, 7], ['full', 6, 0, 7, 10], ['worn', 6, 1, 10, 15], ['broken', 6, 2, 15, null]]}
+};
+let teethCtx = null;
+
+function toothSvg(n, perm, wear, canines) {
+  const step = 18, pad = canines ? 18 : 6, W = n * step + pad * 2, gumY = 44;
+  const missing = wear === 2 ? (n === 8 ? [1, 6] : [1, 4]) : [];
+  let teeth = '';
+  for (let i = 0; i < n; i++) {
+    const dist = Math.abs(i - (n - 1) / 2), x = pad + i * step;
+    if (missing.includes(i)) continue;
+    if (dist < perm / 2) { // permanent teeth replace milk teeth from the centre outward
+      const h = wear === 0 ? 30 : wear === 1 ? 19 : 14;
+      teeth += `<rect class="perm" x="${x + 1}" y="${gumY - h}" width="16" height="${h + 6}" rx="${wear ? 2 : 5}"/>`;
+    } else {
+      teeth += `<rect class="milk" x="${x + 4}" y="${gumY - 14}" width="10" height="18" rx="4"/>`;
+    }
+  }
+  if (canines) [6, W - 14].forEach(x => teeth += `<path class="perm" d="M${x} ${gumY + 2} L${x + 4} ${gumY - 22} L${x + 8} ${gumY + 2}Z"/>`);
+  return `<svg class="tooth-svg" viewBox="0 0 ${W} 60" aria-hidden="true">${teeth}<rect class="gum" x="0" y="${gumY}" width="${W}" height="16" rx="8"/></svg>`;
+}
+function fmtYears(y) { return y < 1 ? t('age_mo', {n: Math.round(y * 12)}) : t('years', {n: fmt(y, 1)}); }
+function teethRange(min, max) {
+  if (max === null) return t('moreThan', {a: fmtYears(min)});
+  if (min === 0) return t('lessThan', {b: fmtYears(max)});
+  return `${fmtYears(min)} – ${fmtYears(max)}`;
+}
+function teethLabel(sp, key, perm) {
+  if (key === 'milk') return t('teeth_milk');
+  if (key === 'worn') return t('teeth_worn');
+  if (key === 'broken') return t('teeth_broken');
+  if (key === 'full') return sp === 'Camel' ? t('teeth_fullCamel') : t('teeth_full', {n: perm});
+  return t('teeth_p', {n: perm});
+}
+
+function openTeeth(animalId) {
+  const a = animalId && animal(animalId);
+  const species = a && TEETH[a.species] ? a.species : 'Cattle';
+  teethCtx = {animalId: a ? a.id : null, species, stage: null};
+  openSheet(`<div class="sheet"><div class="grab"></div>
+    <div class="sheet-head"><h2>🦷 ${t('teethTool')}${a ? ' · ' + esc(aName(a)) : ''}</h2><button type="button" class="icon-btn" data-act="closeSheet" aria-label="${t('close')}">✕</button></div>
+    <div id="teethBody"></div></div>`);
+  renderTeeth();
+}
+function renderTeeth() {
+  const el = document.getElementById('teethBody'); if (!el || !teethCtx) return;
+  const {species, stage, animalId} = teethCtx, cfg = TEETH[species];
+  const picked = cfg.stages.find(s => s[0] === stage);
+  el.innerHTML = `<p class="muted" style="margin:0 0 10px">${t('teethIntro')}</p>
+    <p class="how">${t('teethHow')}</p>
+    <div class="field" style="margin-bottom:12px"><label>${t('f_species')}</label>
+      <select id="teethSpecies">${Object.keys(TEETH).map(s => `<option value="${s}"${s === species ? ' selected' : ''}>${SPECIES[s]} ${esc(tv(s))}</option>`).join('')}</select></div>
+    <div class="tooth-list">${cfg.stages.map(([key, perm, wear, min, max]) =>
+      `<button class="tooth-opt ${stage === key ? 'on' : ''}" data-act="teethPick" data-v="${key}">
+        ${toothSvg(cfg.n, perm, wear, species === 'Camel' && ['full', 'worn', 'broken'].includes(key))}
+        <span class="grow"><b>${teethLabel(species, key, perm)}</b><small>≈ ${teethRange(min, max)}</small></span></button>`).join('')}</div>
+    ${picked ? `<div class="result" id="teethResult"><div class="muted">${t('estAge')}</div><div class="v">≈ ${teethRange(picked[3], picked[4])}</div>
+      <small>${t('teethNote')}</small>
+      ${animalId ? `<button class="btn primary block" style="margin-top:12px" data-act="teethSave">${t('saveEstBirth')}</button>` : ''}</div>`
+      : `<p class="note">${t('teethNote')}</p>`}`;
+  if (picked) document.getElementById('teethResult').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+}
+
+/* ---------- demo data ---------- */
+function seedDemo() {
+  const L = DEMO[lang] || DEMO.en, N = L.names, C = L.care, M = L.meds;
+  const td = today(), id = uid();
+  db.farmers.push({id, name: L.farmer, farm: L.farm, location: L.location, phone: '', currency: L.currency, createdAt: addDays(td, -200)});
+  db.currentId = id;
+  const d = D();
+  const A = (tag, name, species, breed, sex, birth, kgs, extra = {}) => {
+    const a = {id: uid(), tag, name, species, breed: L.breeds?.[breed] || breed, sex, birth, status: 'Active', notes: '', motherTag: '', createdAt: addDays(td, -200),
+      weights: kgs.map(([ago, kg]) => ({date: addDays(td, -ago), kg})), ...extra};
+    d.animals.push(a); return a;
+  };
+  const daisy = A('C-001', N[0], 'Cattle', 'Holstein', 'Female', '2021-03-12', [[180, 540], [90, 565], [20, 578]], {notes: L.notes.daisy});
+  const bella = A('C-002', N[1], 'Cattle', 'Jersey', 'Female', '2022-06-02', [[120, 395], [30, 410]]);
+  const max = A('C-003', N[2], 'Cattle', 'Angus', 'Male', '2020-11-20', [[60, 812]]);
+  const luna = A('C-004', N[3], 'Cattle', 'Holstein', 'Female', addDays(td, -230), [[200, 42], [140, 98], [80, 151], [20, 196]], {motherTag: 'C-001'});
+  A('C-005', N[4], 'Cattle', 'Angus', 'Male', '2021-09-01', [[150, 640]], {status: 'Sold', statusDate: addDays(td, -40), notes: L.notes.rocky});
+  const nala = A('G-001', N[5], 'Goat', 'Saanen', 'Female', '2023-01-05', [[45, 61]]);
+  const billy = A('G-002', N[6], 'Goat', 'Boer', 'Male', '2022-08-19', [[45, 88]]);
+  const woolly = A('S-001', N[7], 'Sheep', 'Merino', 'Female', '2022-04-01', [[60, 66]]);
+  A('S-002', N[8], 'Sheep', 'Awassi', 'Female', '2023-03-22', [[60, 58]]);
+  const flock = A('P-A', N[9], 'Poultry', 'ISA Brown', 'Female', addDays(td, -150), []);
+
+  const H = (a, type, ago, title, next, extra = {}) => d.health.push({id: uid(), animalId: a.id, type, date: addDays(td, -ago), title,
+    medicine: '', cost: null, nextDue: next === null ? '' : addDays(td, next), notes: '', ...extra});
+  H(daisy, 'Vaccination', 350, C[0], -170, {followDone: true, cost: 6});
+  H(daisy, 'Vaccination', 170, C[0], -5, {cost: 6, medicine: M[0]});
+  H(bella, 'Vaccination', 350, C[1], 3, {cost: 8});
+  H(max, 'Deworming', 80, C[2], 10, {medicine: M[1], cost: 12});
+  H(nala, 'Treatment', 6, C[3], 1, {medicine: M[2], cost: 18, notes: L.notes.nala});
+  H(flock, 'Vaccination', 60, C[4], 30, {cost: 15});
+  H(luna, 'Check-up', 20, C[5], null, {notes: L.notes.luna});
+  H(woolly, 'Pregnancy check', 15, C[6], 40, {notes: L.notes.woolly});
+  H(billy, 'Injury', 25, C[7], null, {medicine: M[3], cost: 4});
+
+  for (let i = 13; i >= 0; i--) {
+    const ds = addDays(td, -i), w = Math.sin(i * 1.7);
+    d.production.push({id: uid(), kind: 'Milk', animalId: daisy.id, date: ds, session: 'Full day', qty: +(22 + w * 2.5).toFixed(1)});
+    d.production.push({id: uid(), kind: 'Milk', animalId: bella.id, date: ds, session: 'Full day', qty: +(16 + Math.cos(i) * 1.8).toFixed(1)});
+    if (i > 6 || i < 1) d.production.push({id: uid(), kind: 'Milk', animalId: nala.id, date: ds, session: 'Full day', qty: +(2.8 + w * .4).toFixed(1)});
+    d.production.push({id: uid(), kind: 'Eggs', date: ds, qty: Math.round(34 + Math.sin(i * 2.3) * 3), notes: L.flock});
+    if (i % 3 === 0) {
+      d.feed.push({id: uid(), date: ds, feedType: L.feeds[0], qty: 120, cost: 45, group: 'Cattle', notes: ''});
+      d.feed.push({id: uid(), date: ds, feedType: L.feeds[1], qty: 25, cost: 18, group: 'Poultry', notes: ''});
+    }
+    if (i % 4 === 0) d.feed.push({id: uid(), date: ds, feedType: L.feeds[2], qty: 20, cost: 14, group: 'Goat', notes: ''});
+  }
+  state.view = 'home';
+}
+
+/* ---------- actions ---------- */
+const ACTIONS = {
+  closeSheet: () => closeSheet(),
+  confirmYes: () => { const fn = sheetCtx?.onYes; closeSheet(); if (fn) { fn(); save(); render(); } },
+  sheetDelete: () => sheetCtx?.onDelete?.(),
+  setLang: ds => { lang = ds.v; db.lang = lang; save(); render(); },
+  login: ds => { db.currentId = ds.id; save(); go('home'); },
+  register: () => profileForm(null),
+  demo: () => { seedDemo(); save(); render(); toast(t('demoLoaded')); },
+  logout: () => { db.currentId = null; save(); render(); },
+  editProfile: () => profileForm(me()),
+  deleteAccount: () => openConfirm(t('deleteAccountQ', {name: me().name}), t('deleteAccountBtn'), () => {
+    delete db.data[db.currentId]; db.farmers = db.farmers.filter(f => f.id !== db.currentId); db.currentId = null; toast(t('accountDeleted'));
+  }),
+  filterSpecies: ds => { state.species = ds.v; if (ds.nav) { state.status = 'Active'; state.q = ''; go('animals'); } else render(); },
+  filterStatus: ds => { state.status = ds.v; render(); },
+  addAnimal: () => animalForm(null),
+  editAnimal: ds => animalForm(animal(ds.id)),
+  deleteAnimal: ds => { const a = animal(ds.id); openConfirm(t('deleteAnimalQ', {name: aName(a)}), t('delete'), () => {
+    const d = D(); d.animals = d.animals.filter(x => x.id !== a.id); d.health = d.health.filter(h => h.animalId !== a.id);
+    d.production = d.production.filter(p => p.animalId !== a.id); state.view = 'animals'; toast(t('animalDeleted'));
+  }); },
+  addWeight: ds => { const a = animal(ds.id); openForm({title: t('weighTitle', {name: aName(a)}), values: {date: today()},
+    fields: [{name: 'date', label: t('f_date'), type: 'date', required: true, half: true}, {name: 'kg', label: t('f_weightKg'), type: 'number', required: true, half: true}],
+    onSubmit: v => { (a.weights = a.weights || []).push(v); toast(t('weightRecorded')); }}); },
+  addHealth: ds => healthForm(null, ds.animal ? {animalId: ds.animal} : {}),
+  editHealth: ds => healthForm(D().health.find(h => h.id === ds.id)),
+  logDue: ds => { const h = D().health.find(x => x.id === ds.id);
+    healthForm(null, {animalId: h.animalId, type: h.type, title: h.title, medicine: h.medicine, fromId: h.id}); },
+  teeth: ds => openTeeth(ds.id),
+  teethPick: ds => { teethCtx.stage = ds.v; renderTeeth(); },
+  teethSave: () => {
+    const a = animal(teethCtx.animalId), s = TEETH[teethCtx.species].stages.find(x => x[0] === teethCtx.stage);
+    if (!a || !s) return;
+    const years = s[4] === null ? s[3] + 1 : (s[3] + s[4]) / 2; // middle of the range (a year past an open-ended minimum)
+    const d = new Date(today() + 'T00:00'); d.setDate(d.getDate() - Math.round(years * 365.25));
+    a.birth = iso(d); a.birthEst = true;
+    save(); closeSheet(); render(); toast(t('estSaved'));
+  },
+  prodTab: ds => { state.prod = ds.v; render(); },
+  openProd: ds => { state.prod = ds.k; go('production'); },
+  addProd: ds => prodForm(ds.k, null, ds.animal ? {animalId: ds.animal} : {}),
+  editProd: ds => prodForm(ds.k, (ds.k === 'Feed' ? D().feed : D().production).find(x => x.id === ds.id)),
+  export: () => {
+    const f = me();
+    const blob = new Blob([JSON.stringify({app: 'HerdBook', version: 1, exportedAt: new Date().toISOString(), farmer: f, data: D()}, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `herdbook-${(f.farm.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'farm')}-${today()}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast(t('backupDownloaded'));
+  },
+  import: () => document.getElementById('importFile').click()
+};
+
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]');
+  if (g) { const [v, p] = g.dataset.go.split(':'); go(v, p); return; }
+  const a = e.target.closest('[data-act]');
+  if (a && ACTIONS[a.dataset.act]) { e.preventDefault(); ACTIONS[a.dataset.act](a.dataset, a); }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'q') { state.q = e.target.value; renderAnimalList(); }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'teethSpecies' && teethCtx) { teethCtx.species = e.target.value; teethCtx.stage = null; renderTeeth(); }
+});
+document.getElementById('importFile').addEventListener('change', e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file) return;
+  file.text().then(txt => {
+    const j = JSON.parse(txt);
+    if (!j || j.app !== 'HerdBook' || !j.data || !Array.isArray(j.data.animals)) throw new Error('bad');
+    openConfirm(t('replaceQ', {name: me().name, date: fdate((j.exportedAt || '').slice(0, 10)), n: fmt(j.data.animals.length, 0)}), t('replace'), () => {
+      db.data[db.currentId] = {animals: j.data.animals, health: j.data.health || [], production: j.data.production || [], feed: j.data.feed || []};
+      toast(t('backupImported'));
+    });
+  }).catch(() => toast(t('notBackup')));
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('sheet').hidden) closeSheet(); });
+
+render();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
