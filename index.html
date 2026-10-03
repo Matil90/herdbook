@@ -148,6 +148,17 @@ svg.i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-l
 .result{background:var(--brand-soft);border-radius:14px;padding:14px;margin-top:14px;text-align:center}
 .result .v{font-size:24px;font-weight:700;color:var(--brand)}
 .result small{display:block;color:var(--muted);margin-top:4px}
+.ai-card{border:1.5px solid var(--brand);border-radius:16px;padding:12px;margin-bottom:16px;background:var(--surface)}
+.ai-card .result{margin-top:10px}
+.ai-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ai-badge{background:var(--brand);color:var(--brand-ink);font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px}
+.ai-tips{margin:4px 0 12px;padding-inline-start:20px;color:var(--muted);font-size:14px}
+.ai-row{display:flex;gap:12px;align-items:flex-start}
+.ai-photo{width:76px;height:76px;object-fit:cover;border-radius:12px;flex:none}
+.ai-text{margin:6px 0;font-size:14px}
+.ai-err{color:var(--danger);font-size:14px}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--brand);border-radius:50%;vertical-align:-3px;animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
 .toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
 .toast[hidden]{display:none}
 @keyframes up{from{transform:translate(-50%,40px)}}
@@ -159,6 +170,8 @@ svg.i{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-l
 <div id="sheet" class="sheet-wrap" hidden></div>
 <div id="toast" class="toast" hidden></div>
 <input id="importFile" type="file" accept="application/json,.json" hidden>
+<input id="teethPhotoFile" type="file" accept="image/*" hidden>
+<script src="config.js"></script>
 <script src="i18n.js"></script>
 <script>
 'use strict';
@@ -168,6 +181,7 @@ const SPECIES = {Sheep:'🐑',Goat:'🐐',Cattle:'🐄'};
 const MILK_SPECIES = ['Cattle','Goat','Sheep'];
 const HEALTH_TYPES = ['Vaccination','Treatment','Deworming','Check-up','Injury','Pregnancy check','Other'];
 const STATUSES = ['Active','Sold','Deceased'];
+const AI_ENABLED = !!(typeof HB_CONFIG !== 'undefined' && HB_CONFIG.supabaseUrl && HB_CONFIG.supabaseKey);
 const LOGO = '<svg viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#2f6b3a"/><path d="M256 404V252" stroke="#f4f1ea" stroke-width="28" stroke-linecap="round"/><path d="M256 262c0-72 52-124 134-124 0 82-52 134-134 124z" fill="#f4f1ea"/><path d="M256 304c0-62-44-104-114-104 0 68 44 112 114 104z" fill="#cfe5c9"/></svg>';
 const ICONS = {
   home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -756,7 +770,7 @@ function toothSvg(n, perm, wear) {
   }
   return `<svg class="tooth-svg" viewBox="0 0 ${W} 60" aria-hidden="true">${teeth}<rect class="gum" x="0" y="${gumY}" width="${W}" height="16" rx="8"/></svg>`;
 }
-function fmtYears(y) { return y < 1 ? t('age_mo', {n: Math.round(y * 12)}) : t('years', {n: fmt(y, 1)}); }
+function fmtYears(y) { return y < 1 ? t('age_mo', {n: Math.round(y * 12)}) : y === 1 ? t('year1') : t('years', {n: fmt(y, 1)}); }
 function teethRange(min, max) {
   if (max === null) return t('moreThan', {a: fmtYears(min)});
   if (min === 0) return t('lessThan', {b: fmtYears(max)});
@@ -773,29 +787,112 @@ function teethLabel(key, perm) {
 function openTeeth(animalId) {
   const a = animalId && animal(animalId);
   const species = a && TEETH[a.species] ? a.species : 'Sheep';
-  teethCtx = {animalId: a ? a.id : null, species, stage: null};
+  // stage: the chosen picture; src: who chose it ('ai' or 'manual'); ai: photo analysis state.
+  teethCtx = {animalId: a ? a.id : null, species, stage: null, src: null, ai: {status: 'idle'}};
   openSheet(`<div class="sheet"><div class="grab"></div>
     <div class="sheet-head"><h2>🦷 ${t('teethTool')}${a ? ' · ' + esc(aName(a)) : ''}</h2><button type="button" class="icon-btn" data-act="closeSheet" aria-label="${t('close')}">✕</button></div>
     <div id="teethBody"></div></div>`);
   renderTeeth();
 }
-function renderTeeth() {
+
+// Estimated age for the chosen stage, with the save button when an animal is open.
+function teethResultBox(id) {
+  const s = TEETH[teethCtx.species].stages.find(x => x[0] === teethCtx.stage);
+  return `<div class="result" id="${id}"><div class="muted">${t('estAge')}</div><div class="v">≈ ${teethRange(s[3], s[4])}</div>
+    <small>${teethLabel(s[0], s[1])} · ${t('teethNote')}</small>
+    ${teethCtx.animalId ? `<button class="btn primary block" style="margin-top:12px" data-act="teethSave">${t('saveEstBirth')}</button>` : ''}</div>`;
+}
+
+function aiCard() {
+  const ai = teethCtx.ai, r = ai.result;
+  const photo = ai.photo ? `<img class="ai-photo" src="${ai.photo}" alt="">` : '';
+  const retake = `<button class="btn block" style="margin-top:10px" data-act="teethPhoto">📷 ${t('aiPhotoNew')}</button>`;
+  if (ai.status === 'idle') {
+    return `<div class="ai-card"><div class="ai-head"><span class="ai-badge">${t('aiBadge')}</span><b>${t('aiTitle')}</b></div>
+      <ol class="ai-tips"><li>${t('aiTip1')}</li><li>${t('aiTip2')}</li><li>${t('aiTip3')}</li></ol>
+      <button class="btn primary block" data-act="teethPhoto">📷 ${t('aiPhotoBtn')}</button></div>`;
+  }
+  if (ai.status === 'busy') {
+    return `<div class="ai-card"><div class="ai-row">${photo}<div class="grow"><span class="spin"></span> ${t('aiBusy')}</div></div></div>`;
+  }
+  if (ai.status === 'error') {
+    return `<div class="ai-card" id="aiCard"><div class="ai-row">${photo}<div class="grow ai-err">${t('aiErr_' + ai.error)}</div></div>${retake}</div>`;
+  }
+  // done
+  if (!r.photo_ok || r.stage === 'unknown') {
+    return `<div class="ai-card" id="aiCard"><div class="ai-row">${photo}<div class="grow"><b>${t('aiRetake')}</b>
+      ${r.explanation ? `<p class="ai-text">${esc(r.explanation)}</p>` : ''}${r.advice ? `<p class="ai-text">💡 ${esc(r.advice)}</p>` : ''}</div></div>${retake}</div>`;
+  }
+  return `<div class="ai-card" id="aiCard"><div class="ai-row">${photo}<div class="grow">
+      <div class="ai-head"><span class="ai-badge">${t('aiBadge')}</span><b>${t('aiSees')}</b></div>
+      <p class="ai-text">${esc(r.explanation)}</p>
+      <span class="pill ${r.confidence === 'high' ? 'ok' : r.confidence === 'low' ? 'warn' : ''}">${t('aiConf_' + r.confidence)}</span></div></div>
+    ${r.advice ? `<p class="ai-text">💡 ${esc(r.advice)}</p>` : ''}
+    ${teethCtx.src === 'ai' ? teethResultBox('aiResult') : ''}
+    <p class="ai-text muted">${t('aiCheck')}</p>${retake}</div>`;
+}
+
+function renderTeeth(scrollTo) {
   const el = document.getElementById('teethBody'); if (!el || !teethCtx) return;
-  const {species, stage, animalId} = teethCtx, cfg = TEETH[species];
-  const picked = cfg.stages.find(s => s[0] === stage);
-  el.innerHTML = `<p class="muted" style="margin:0 0 10px">${t('teethIntro')}</p>
-    <p class="how">${t('teethHow')}</p>
-    <div class="field" style="margin-bottom:12px"><label>${t('f_species')}</label>
+  const {species, stage, src} = teethCtx, cfg = TEETH[species];
+  el.innerHTML = `<div class="field" style="margin-bottom:12px"><label>${t('f_species')}</label>
       <select id="teethSpecies">${Object.keys(TEETH).map(s => `<option value="${s}"${s === species ? ' selected' : ''}>${SPECIES[s]} ${esc(tv(s))}</option>`).join('')}</select></div>
+    ${AI_ENABLED ? aiCard() : ''}
+    <p class="muted" style="margin:0 0 10px">${AI_ENABLED ? t('orChoose') : t('teethIntro')}</p>
+    <p class="how">${t('teethHow')}</p>
     <div class="tooth-list">${cfg.stages.map(([key, perm, wear, min, max]) =>
       `<button class="tooth-opt ${stage === key ? 'on' : ''}" data-act="teethPick" data-v="${key}">
         ${toothSvg(cfg.n, perm, wear)}
         <span class="grow"><b>${teethLabel(key, perm)}</b><small>≈ ${teethRange(min, max)}</small></span></button>`).join('')}</div>
-    ${picked ? `<div class="result" id="teethResult"><div class="muted">${t('estAge')}</div><div class="v">≈ ${teethRange(picked[3], picked[4])}</div>
-      <small>${t('teethNote')}</small>
-      ${animalId ? `<button class="btn primary block" style="margin-top:12px" data-act="teethSave">${t('saveEstBirth')}</button>` : ''}</div>`
-      : `<p class="note">${t('teethNote')}</p>`}`;
-  if (picked) document.getElementById('teethResult').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+    ${stage && src === 'manual' ? teethResultBox('teethResult') : `<p class="note">${t('teethNote')}</p>`}`;
+  const target = scrollTo && document.getElementById(scrollTo);
+  if (target) target.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+}
+
+// Shrinks a phone photo to at most `max` pixels on its longest side and re-encodes it as JPEG.
+function shrinkImage(file, max, quality) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      const dataUrl = c.toDataURL('image/jpeg', quality);
+      resolve({dataUrl, base64: dataUrl.slice(dataUrl.indexOf(',') + 1)});
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image')); };
+    img.src = url;
+  });
+}
+
+async function analyzeTeethPhoto(file) {
+  const ctx = teethCtx; if (!ctx) return;
+  let shot;
+  try { shot = await shrinkImage(file, 1280, 0.85); }
+  catch { ctx.ai = {status: 'error', error: 'image'}; renderTeeth('aiCard'); return; }
+  ctx.ai = {status: 'busy', photo: shot.dataUrl};
+  renderTeeth();
+  let ai;
+  try {
+    const res = await fetch(HB_CONFIG.supabaseUrl.replace(/\/$/, '') + '/functions/v1/teeth-age', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', apikey: HB_CONFIG.supabaseKey, Authorization: 'Bearer ' + HB_CONFIG.supabaseKey},
+      body: JSON.stringify({image: shot.base64, species: ctx.species, lang})
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(['limit', 'busy', 'bad_image'].includes(data.error) ? data.error : 'ai');
+    ai = {status: 'done', photo: shot.dataUrl, result: data};
+  } catch (e) {
+    ai = {status: 'error', photo: shot.dataUrl, error: navigator.onLine === false ? 'offline' : (e.message in {limit: 1, busy: 1, bad_image: 1} ? e.message : 'ai')};
+  }
+  if (teethCtx !== ctx) return; // the sheet was closed or reopened meanwhile
+  ctx.ai = ai;
+  if (ai.status === 'done' && ai.result.photo_ok && ai.result.stage !== 'unknown' && TEETH[ctx.species].stages.some(s => s[0] === ai.result.stage)) {
+    ctx.stage = ai.result.stage; ctx.src = 'ai';
+  }
+  renderTeeth('aiCard');
 }
 
 /* ---------- demo data ---------- */
@@ -878,7 +975,8 @@ const ACTIONS = {
   logDue: ds => { const h = D().health.find(x => x.id === ds.id);
     healthForm(null, {animalId: h.animalId, type: h.type, title: h.title, medicine: h.medicine, fromId: h.id}); },
   teeth: ds => openTeeth(ds.id),
-  teethPick: ds => { teethCtx.stage = ds.v; renderTeeth(); },
+  teethPick: ds => { teethCtx.stage = ds.v; teethCtx.src = 'manual'; renderTeeth('teethResult'); },
+  teethPhoto: () => document.getElementById('teethPhotoFile').click(),
   teethSave: () => {
     const a = animal(teethCtx.animalId), s = TEETH[teethCtx.species].stages.find(x => x[0] === teethCtx.stage);
     if (!a || !s) return;
@@ -914,7 +1012,14 @@ document.addEventListener('input', e => {
   if (e.target.id === 'q') { state.q = e.target.value; renderAnimalList(); }
 });
 document.addEventListener('change', e => {
-  if (e.target.id === 'teethSpecies' && teethCtx) { teethCtx.species = e.target.value; teethCtx.stage = null; renderTeeth(); }
+  if (e.target.id === 'teethSpecies' && teethCtx) {
+    Object.assign(teethCtx, {species: e.target.value, stage: null, src: null, ai: {status: 'idle'}});
+    renderTeeth();
+  }
+  if (e.target.id === 'teethPhotoFile') {
+    const file = e.target.files[0]; e.target.value = '';
+    if (file) analyzeTeethPhoto(file);
+  }
 });
 document.getElementById('importFile').addEventListener('change', e => {
   const file = e.target.files[0]; e.target.value = '';

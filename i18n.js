@@ -65,8 +65,19 @@ en: {
   teethNote: "Estimate only: it varies with breed, feeding and region.",
   teeth_milk: "Milk teeth only (small)", teeth_p: "{n} permanent teeth", teeth_full: "Full mouth: {n} permanent teeth",
   teeth_worn: "Teeth worn down and spaced", teeth_broken: "Teeth broken or missing",
-  estAge: "Estimated age", years: "{n} years", moreThan: "more than {a}", lessThan: "less than {b}",
-  saveEstBirth: "Save as estimated birth date", estSaved: "Estimated birth date saved", estimated: "estimated"
+  estAge: "Estimated age", years: "{n} years", year1: "1 year", moreThan: "more than {a}", lessThan: "less than {b}",
+  saveEstBirth: "Save as estimated birth date", estSaved: "Estimated birth date saved", estimated: "estimated",
+  aiBadge: "AI", aiTitle: "Age from a photo", aiPhotoBtn: "Take a photo of the teeth", aiPhotoNew: "Take another photo",
+  aiTip1: "Pull down the lower lip with your thumb", aiTip2: "Photograph from the front, close up (20 to 30 cm)",
+  aiTip3: "In daylight, with all the lower front teeth visible",
+  aiBusy: "The AI is examining the teeth…", aiSees: "The AI sees", aiConf_high: "Confidence: high", aiConf_medium: "Confidence: medium", aiConf_low: "Confidence: low",
+  aiCheck: "Check with the pictures below and correct if needed.", aiRetake: "The photo isn't clear enough.",
+  aiErr_offline: "No internet connection. Photo analysis needs internet; you can still choose the picture yourself below.",
+  aiErr_limit: "Daily photo limit reached. Try again tomorrow, or choose the picture yourself below.",
+  aiErr_busy: "The service is very busy. Try again in a moment.",
+  aiErr_bad_image: "This photo couldn't be read. Take another one.", aiErr_image: "This photo couldn't be opened. Take another one.",
+  aiErr_ai: "The analysis didn't work. Try again, or choose the picture yourself below.",
+  orChoose: "Or choose the matching picture yourself:"
 },
 fr: {
   appTag: "Le carnet d'élevage de chaque éleveur : animaux, santé, alimentation et production dans votre poche.",
@@ -128,8 +139,19 @@ fr: {
   teethNote: "Estimation seulement : cela varie selon la race, l'alimentation et la région.",
   teeth_milk: "Seulement des dents de lait (petites)", teeth_p: "{n} dents permanentes", teeth_full: "Bouche pleine : {n} dents permanentes",
   teeth_worn: "Dents usées et écartées", teeth_broken: "Dents cassées ou manquantes",
-  estAge: "Âge estimé", years: "{n} ans", moreThan: "plus de {a}", lessThan: "moins de {b}",
-  saveEstBirth: "Enregistrer comme date de naissance estimée", estSaved: "Date de naissance estimée enregistrée", estimated: "estimée"
+  estAge: "Âge estimé", years: "{n} ans", year1: "1 an", moreThan: "plus de {a}", lessThan: "moins de {b}",
+  saveEstBirth: "Enregistrer comme date de naissance estimée", estSaved: "Date de naissance estimée enregistrée", estimated: "estimée",
+  aiBadge: "IA", aiTitle: "L'âge à partir d'une photo", aiPhotoBtn: "Prendre une photo des dents", aiPhotoNew: "Reprendre une photo",
+  aiTip1: "Baissez la lèvre du bas avec le pouce", aiTip2: "Photographiez de face et de près (20 à 30 cm)",
+  aiTip3: "À la lumière du jour, toutes les dents de devant du bas bien visibles",
+  aiBusy: "L'IA examine les dents…", aiSees: "L'IA voit", aiConf_high: "Confiance : élevée", aiConf_medium: "Confiance : moyenne", aiConf_low: "Confiance : faible",
+  aiCheck: "Vérifiez avec les images ci-dessous et corrigez si besoin.", aiRetake: "La photo n'est pas assez claire.",
+  aiErr_offline: "Pas de connexion Internet. L'analyse par photo a besoin d'Internet ; vous pouvez choisir l'image vous-même ci-dessous.",
+  aiErr_limit: "Limite de photos atteinte pour aujourd'hui. Réessayez demain, ou choisissez l'image vous-même ci-dessous.",
+  aiErr_busy: "Le service est très occupé. Réessayez dans un moment.",
+  aiErr_bad_image: "Cette photo n'a pas pu être lue. Prenez-en une autre.", aiErr_image: "Cette photo n'a pas pu être ouverte. Prenez-en une autre.",
+  aiErr_ai: "L'analyse n'a pas marché. Réessayez, ou choisissez l'image vous-même ci-dessous.",
+  orChoose: "Ou choisissez vous-même l'image qui correspond :"
 },
 ar: {
   appTag: "سجل الماشية لكل مزارع: الحيوانات والصحة والتغذية والإنتاج في جيبك.",
@@ -191,8 +213,19 @@ ar: {
   teethNote: "تقدير فقط: يختلف حسب السلالة والتغذية والمنطقة.",
   teeth_milk: "أسنان لبنية فقط (صغيرة)", teeth_p: "{n} أسنان دائمة", teeth_full: "فم كامل: {n} أسنان دائمة",
   teeth_worn: "أسنان متآكلة ومتباعدة", teeth_broken: "أسنان مكسورة أو مفقودة",
-  estAge: "العمر التقديري", years: "{n} سنة", moreThan: "أكثر من {a}", lessThan: "أقل من {b}",
-  saveEstBirth: "حفظ كتاريخ ميلاد تقديري", estSaved: "تم حفظ تاريخ الميلاد التقديري", estimated: "تقديري"
+  estAge: "العمر التقديري", years: "{n} سنة", year1: "سنة واحدة", moreThan: "أكثر من {a}", lessThan: "أقل من {b}",
+  saveEstBirth: "حفظ كتاريخ ميلاد تقديري", estSaved: "تم حفظ تاريخ الميلاد التقديري", estimated: "تقديري",
+  aiBadge: "ذكاء اصطناعي", aiTitle: "العمر من صورة", aiPhotoBtn: "التقط صورة للأسنان", aiPhotoNew: "التقط صورة أخرى",
+  aiTip1: "اخفض الشفة السفلى بإبهامك", aiTip2: "صوّر من الأمام وعن قرب (20 إلى 30 سم)",
+  aiTip3: "في ضوء النهار، مع ظهور كل الأسنان الأمامية السفلية",
+  aiBusy: "الذكاء الاصطناعي يفحص الأسنان…", aiSees: "يرى الذكاء الاصطناعي", aiConf_high: "الثقة: عالية", aiConf_medium: "الثقة: متوسطة", aiConf_low: "الثقة: ضعيفة",
+  aiCheck: "تحقّق بالصور أدناه وصحّح إذا لزم الأمر.", aiRetake: "الصورة غير واضحة بما يكفي.",
+  aiErr_offline: "لا يوجد اتصال بالإنترنت. تحليل الصورة يحتاج إلى الإنترنت؛ يمكنك اختيار الصورة بنفسك أدناه.",
+  aiErr_limit: "تم بلوغ الحد اليومي للصور. حاول غدًا، أو اختر الصورة بنفسك أدناه.",
+  aiErr_busy: "الخدمة مشغولة جدًا. حاول بعد قليل.",
+  aiErr_bad_image: "تعذّرت قراءة هذه الصورة. التقط صورة أخرى.", aiErr_image: "تعذّر فتح هذه الصورة. التقط صورة أخرى.",
+  aiErr_ai: "لم ينجح التحليل. حاول مرة أخرى، أو اختر الصورة بنفسك أدناه.",
+  orChoose: "أو اختر بنفسك الصورة المطابقة:"
 }
 };
 

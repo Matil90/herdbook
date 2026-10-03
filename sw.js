@@ -1,6 +1,6 @@
 // Offline cache: serve app files from cache, refresh them in the background.
-const CACHE = 'herdbook-v6';
-const FILES = ['./', './index.html', './i18n.js', './manifest.json', './icon.svg',
+const CACHE = 'herdbook-v7';
+const FILES = ['./', './index.html', './config.js', './i18n.js', './manifest.json', './icon.svg',
   './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
